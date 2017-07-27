@@ -1,5 +1,6 @@
 package ejb.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -15,6 +16,7 @@ import ejb.VendaBO;
 import model.ProdutoPO;
 import model.VendaPO;
 import model.VendaProdutoPO;
+import model.VendedorPO;
 
 @Stateless
 public class VendaBOImp implements VendaBO {
@@ -61,12 +63,25 @@ public class VendaBOImp implements VendaBO {
 	}
 
 	@Override
-	public List<VendaPO> consulta(Date dateIni, Date dateFim) throws Exception {
+	public List<VendaPO> consulta(Date dateIni, Date dateFim, List<VendedorPO> vendedorPOs) throws Exception {
+		List<VendaPO> list = null;
 		HashMap<String, Object> map = new HashMap<>();
 		map.put("dateIni", dateIni);
 		map.put("dateFim", dateFim);
-		List<VendaPO> list = vendaDAO.executeNamedQuery(VendaPO.FIND_BY_DATA, map);
+		if(vendedorPOs == null || vendedorPOs.isEmpty()){
+			list = vendaDAO.executeNamedQuery(VendaPO.FIND_BY_DATA, map);
+		}else {
+			map.put("inclList", getInListVendedores(vendedorPOs));
+			list = vendaDAO.executeNamedQuery(VendaPO.FIND_BY_DATA_VENDEDOR, map);
+		}
+		
 		return list;
+	}
+
+	private List<Long> getInListVendedores(List<VendedorPO> vendedorPOs) {
+		List<Long> ids = new ArrayList<>();
+		for (VendedorPO v : vendedorPOs) ids.add(v.getVendedorId());
+		return ids;
 	}
 
 	

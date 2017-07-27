@@ -21,11 +21,14 @@ import javax.persistence.Table;
 @Table(name="venda")
 @NamedQueries(
 {@NamedQuery(name="VendaPO.FIND_BY_DATA",
-		     query="select v from VendaPO v where v.dataVenda >= :dateIni and v.dataVenda <= :dateFim ")
+		     query="select v from VendaPO v where v.dataVenda >= :dateIni and v.dataVenda <= :dateFim "),
+@NamedQuery(name="VendaPO.FIND_BY_DATA_VENDEDOR",
+    		query="select v from VendaPO v where v.dataVenda >= :dateIni and v.dataVenda <= :dateFim and vendedorPO.vendedorId IN (:inclList) ")	
 })
 public class VendaPO implements Serializable {
 
 	public static final String FIND_BY_DATA = "VendaPO.FIND_BY_DATA";
+	public static final String FIND_BY_DATA_VENDEDOR = "VendaPO.FIND_BY_DATA_VENDEDOR";
 	
 	private static final long serialVersionUID = 3452805489380534239L;
 	
