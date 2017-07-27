@@ -72,7 +72,14 @@ public class ConsultaVendaMB extends AbstractMB implements Serializable {
 
 	public void consutarVendas(){
 		try {
-			vendasList = vendaBO.consulta(dataIni, dataFim);
+			totalVlSemDesconto =0;
+			totalDesconto =0;
+			totalVenda=0;
+			totalGastoProd=0;
+			totalComissao=0;
+			totalLucro=0;
+			vendasList = new ArrayList<>();
+			vendasList = vendaBO.consulta(dataIni, dataFim,vendedoresSelectList);
 			if (vendasList == null || vendasList.isEmpty()){
 				menssagemErro("Nenhuma Venda encontrada neste Período");
 			}else {
@@ -126,6 +133,11 @@ public class ConsultaVendaMB extends AbstractMB implements Serializable {
 			vr =   vendaPO.getValorFinalVenda() - (gastosComissao(vendaPO) + gastosProd(vendaPO));
 		}
 		return vr;
+	}
+	
+	
+	public void limparVendores(){
+		if (!vendedorSN) this.vendedoresSelectList = new ArrayList<>(); 
 	}
 	
 	

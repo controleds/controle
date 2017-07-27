@@ -53,7 +53,7 @@
 				<h:panelGrid cellpadding="5" columns="3" >
  					<p:outputLabel value="Filtrar Por Vendedor?"/>
  					<p:selectBooleanButton id="value2x" value="#{consultaVendaMB.vendedorSN}" onLabel="Sim" offLabel="Não" onIcon="ui-icon-check" offIcon="ui-icon-close" style="width:60px">
-            			<p:ajax process="xxc" update="xxc" />
+            			<p:ajax process="xxc" update="xxc" listener="#{consultaVendaMB.limparVendores()}"/>
         			</p:selectBooleanButton>
  				
  				

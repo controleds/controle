@@ -198,7 +198,7 @@ jQuery(document).ready(function(){
 				<p:spacer height="50" />
 				
 				
-				<p:panel style="width: 95%;">
+				<p:panel >
 		
 					<p:dataTable id="carsTable" widgetVar="carsTable" var="pro" value="#{produtoMB.produtoPOsList}" 
 						paginator="true" rows="5">
@@ -207,7 +207,7 @@ jQuery(document).ready(function(){
 		        		</f:facet>
 		
 		
-					<p:column  headerText="Produto" style="width:70px;text-align: center" >
+					<p:column  headerText="Produto" style="text-align: center" >
 						<p:graphicImage value="#{imageProdutoMB.image}" height="50" width="50">
     						<f:param name="id" value="#{pro.produtoId}" />
 						</p:graphicImage>
@@ -223,7 +223,7 @@ jQuery(document).ready(function(){
 					</p:column>
 					
 					
-					<p:column filterBy="#{pro.produzido.booleanValue()}" style="width:200px;text-align: center" headerText="Produzido/Revenda"  filterMatchMode="equals">
+					<p:column filterBy="#{pro.produzido.booleanValue()}" style="text-align: center" headerText="Produzido/Revenda"  filterMatchMode="equals">
 		            <f:facet name="filter">
 		                <p:selectOneButton onchange="PF('carsTable').filter()">
 		                    <f:converter converterId="javax.faces.Boolean" />
@@ -237,10 +237,26 @@ jQuery(document).ready(function(){
 					
 					
 					
+					<p:column headerText="Valor Comp/Prod" style="text-align: center" sortBy="#{pro.precoCompra}" >
+						<p:outputLabel value="#{pro.precoCompra}">
+							<f:convertNumber pattern="#,##0.00" />
+						</p:outputLabel>	
+					</p:column>
+					
 					<p:column headerText="Valor Venda" style="text-align: center" sortBy="#{pro.precoVenda}" >
 						<p:outputLabel value="#{pro.precoVenda}">
 							<f:convertNumber pattern="#,##0.00" />
 						</p:outputLabel>	
+					</p:column>
+					
+					<p:column headerText="Lucro est." style="text-align: center" sortBy="#{pro.lucro}" >
+						<p:outputLabel value="#{pro.lucro}">
+							<f:convertNumber pattern="#,##0.00" />
+						</p:outputLabel>	
+					</p:column>
+					
+					<p:column headerText="Quantidade" style="text-align: center" sortBy="#{pro.quantidadeEstoque}" >
+						<p:outputLabel value="#{pro.quantidadeEstoque}"/>
 					</p:column>
 					
 					
