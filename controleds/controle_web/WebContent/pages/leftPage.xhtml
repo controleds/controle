@@ -1,0 +1,58 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:of="http://omnifaces.org/functions"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+
+<f:view contentType="text/html">
+<h:head>
+
+<ui:include src="../css/all_css.css" />
+
+</h:head>
+	
+
+	
+</f:view>
+		
+		<p:layoutUnit  position="west" size="170" style="width: 350px; height:800px"  header="Menu" resizable="true"  collapsible="true" styleClass="teste">
+				<p:panelMenu style="width:165px" >
+					<p:submenu label="Cadastros">
+						
+						<p:menuitem value="Fornecedores" icon="fa fa-user-plus"
+							ajax="false" action="/pages/fornecedores.xhtml" immediate="true" />
+						
+						<p:menuitem value="Clientes" icon="fa fa-user-plus"
+							ajax="false" action="/pages/clientes.xhtml" immediate="true" />	
+					    
+	    				<p:menuitem value="Vendedores" icon="fa fa-user-plus"
+							ajax="false" action="/pages/vendedores.xhtml" immediate="true" />
+					    
+					  </p:submenu>
+					  <p:submenu label="Produtos">  
+					    
+					    <p:menuitem value="Componentes" icon="fa fa-sitemap" ajax="false"
+							action="/pages/componentes.xhtml" immediate="true" />
+						
+					    
+					    <p:menuitem value="Produtos" icon="fa fa-list-ul" ajax="false"
+							action="/pages/produto.xhtml" immediate="true" />
+						
+						
+							
+					</p:submenu>
+					
+					<p:submenu label="Vendas">
+						<p:menuitem value="Consulta Vendas" ajax="false" icon="fa fa-cc-visa" action="/pages/consultaVendas.xhtml"      immediate="true" />
+						<p:menuitem value="Nova Venda" ajax="false" icon="fa fa-dollar" action="/pages/venda.xhtml"      immediate="true" />
+						
+					</p:submenu>
+					
+						
+				</p:panelMenu>
+		</p:layoutUnit>
+</html>

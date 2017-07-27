@@ -1,0 +1,20 @@
+<style type="text/css" media="screen">
+.ui-widget, .ui-widget .ui-widget {
+	font-size: 11px !important;
+}
+.ui-column-title {
+	font-size: 11px !important;
+}
+.ui-layout, .ui-layout-doc, .ui-layout-unit, .ui-layout-wrap, .ui-layout-bd, .ui-layout-hd{
+             border: none;
+}
+
+.bLeft{
+	border: 2px;
+}
+
+.semBorda tr, .semBorda td {
+	border: none !important;
+}
+
+</style>

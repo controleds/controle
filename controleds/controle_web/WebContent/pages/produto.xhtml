@@ -1,0 +1,335 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:o="http://omnifaces.org/ui">
+
+
+<f:view contentType="text/html">
+	<h:head>
+		<f:facet name="first">
+			<meta http-equiv="X-UA-Compatible" content="EmulateIE8" />
+			<meta content='text/html; charset=UTF-8' http-equiv="Content-Type" />
+		</f:facet>
+		<ui:include src="../css/all_css.css" />
+	</h:head>
+</f:view>
+
+<script type="text/javascript">
+
+jQuery(document).ready(function(){
+	$(document).keydown(function(e) {
+		if(e.which==17 || e.which==74 || e.which==13){
+            e.preventDefault();
+        }else{
+            console.log(e.which);
+        }
+	});
+});
+		
+</script>
+
+
+<h:form id="form">
+	
+	<p:layout resizerTip="Resize Me" togglerTipClosed="Open Me"
+		togglerTipOpen="Close Me">
+	
+	<p:growl id="growl" showDetail="false" sticky="sticky" closable="true" life="3000" />
+	<p:messages id="messages" showDetail="false" closable="true" />
+	<ui:include src="../pages/leftPage.xhtml" />
+	<ui:include src="../pages/topPage.xhtml" />
+	
+	<p:layoutUnit  position="center">
+
+				          			
+  				
+				<center>
+				<p:panel id="cadUsuer" style="width: 95%;" >
+				<f:facet name="header">
+		           	<span style="font-size: 15px">Cadastro Produtos</span>
+		        </f:facet>
+				
+				
+				<h:panelGrid columns="2" id="matchGrid" cellpadding="5">
+		
+					
+					<h:outputText value="Produziodo: " />
+			        <p:selectBooleanButton id="value2" value="#{produtoMB.produzido}"  onLabel="Sim" offLabel="Não" onIcon="ui-icon-check" offIcon="ui-icon-close" style="width:60px">
+			            <p:ajax update="@form" process="@this" listener="#{produtoMB.ini()}"/>
+			        </p:selectBooleanButton>
+					
+					<p:outputLabel for="nome" value="Nome: " />
+					<p:inputText id="nome" value="#{produtoMB.produtoPO.nome}"
+						required="true" maxlength="100" style="width: 500px;" />
+					
+					
+					<h:outputLabel value="Foto" />
+					<p:fileUpload fileUploadListener="#{produtoMB.handleFileUpload}" mode="advanced" dragDropSupport="false"
+           				update="messages" sizeLimit="10000000" fileLimit="3" allowTypes="/(\.|\/)(gif|jpe?g|png)$/" />
+					
+					<p:outputLabel  for="input2xx" value="Quantidade Estoque:" />
+						<p:inputNumber required="true" id="input2xx"  decimalPlaces="0"  minValue="0" value="#{produtoMB.produtoPO.quantidadeEstoque}">  
+                	</p:inputNumber>
+					
+					<p:outputLabel  for="input11" value="Valor venda:" rendered="#{produtoMB.produzido}" />
+						<p:inputNumber rendered="#{produtoMB.produzido}"  required="true" id="input11" decimalSeparator="," thousandSeparator="." value="#{produtoMB.produtoPO.precoVenda}">  
+                		<p:ajax update=":form:matchGridxxcc" process="@this,input22" listener="#{produtoMB.calculaLucroProd()}" /> 
+                	</p:inputNumber>
+					
+					<h:outputLabel value="Fornecedor:"  rendered="#{!produtoMB.produzido}" />
+					 <p:selectOneMenu  rendered="#{!produtoMB.produzido}" id="forneOne" effect="fade" filter="true" filterMatchMode="startsWith" value="#{produtoMB.fornecedorselectItem}" style="width: 500px;vertical-align:middle"> 
+			            <f:selectItem itemLabel="Select One" itemValue="" />
+			            <f:selectItems value="#{produtoMB.fornecedoresSelectItems}" />
+			        </p:selectOneMenu>
+					
+					<p:outputLabel for="scanInput" value="Código Produto: "  rendered="#{!produtoMB.produzido}" />
+					<h:panelGroup>
+					<p:inputText  value="#{produtoMB.produtoPO.codigoProduto}" rendered="#{!produtoMB.produzido}"
+						id="scanInput" maxlength="100" style="width: 400px;" />
+					<p:commandButton rendered="#{!produtoMB.produzido}" value="Gerar Código" process="@this" update="scanInput" actionListener="#{produtoMB.gerarCodigo}"></p:commandButton>
+					</h:panelGroup>			
+					
+					<p:outputLabel  for="input1" value="Valor Compra:"  rendered="#{!produtoMB.produzido}" />
+						<p:inputNumber rendered="#{!produtoMB.produzido}" required="true" id="input1" decimalSeparator="," thousandSeparator="." value="#{produtoMB.produtoPO.precoCompra}"> 
+							<p:ajax update="input3" process="@this,input2" listener="#{produtoMB.calculaLucro()}" /> 
+                	</p:inputNumber> 
+					
+					<p:outputLabel  for="input2" value="Valor Revenda:" rendered="#{!produtoMB.produzido}" />
+						<p:inputNumber rendered="#{!produtoMB.produzido}"  required="true" id="input2" decimalSeparator="," thousandSeparator="." value="#{produtoMB.produtoPO.precoVenda}">  
+                		<p:ajax update="input3" process="@this,input1" listener="#{produtoMB.calculaLucro()}" /> 
+                	</p:inputNumber> 
+				
+					<p:outputLabel  for="input3" value="Lucro Estimado:"  rendered="#{!produtoMB.produzido}" />
+						<p:inputNumber  rendered="#{!produtoMB.produzido}" readonly="true" id="input3" decimalSeparator="," thousandSeparator="." value="#{produtoMB.produtoPO.lucro}">  
+                	</p:inputNumber>
+					
+					
+				</h:panelGrid>
+				
+				
+				
+				<p:panelGrid columns="2" id="matchGrid323" rendered="#{produtoMB.produzido}">
+					
+					<p:commandButton value="Adicionar Componente" onclick="PF('prodDialog').show()" style="width:150px;height:150px" />
+					
+					
+					<p:dataTable id="dataTable" var="com" value="#{produtoMB.componentesAdicionadosList}"
+						paginator="true" rows="5">
+						<f:facet name="header">
+		           		 <span style="font-size: 15px">Componentes</span>
+		        		</f:facet>
+		
+		
+					<p:column  headerText="Componente" style="width:70px;text-align: center" >
+						<p:graphicImage value="#{imageComponenteMB.image}" height="50" width="50">
+    						<f:param name="id" value="#{com.componenteId}" />
+						</p:graphicImage>
+				   </p:column>		
+					
+					<p:column headerText="Nome" filterBy="#{usu.celular}" style="text-align: center" filterMatchMode="contains">
+						<p:outputLabel value="#{com.nome}"/>
+					</p:column>
+					
+					<p:column headerText="Valor Unitario" style="text-align: center" sortBy="#{com.valorUnitarioCompra}" >
+						<p:outputLabel value="#{com.valorUnitarioCompra}">
+							<f:convertNumber pattern="#,##0.00" />
+						</p:outputLabel>	
+					</p:column>
+					
+					<p:column  headerText="Quantidate"  >
+						<center>
+						 <p:outputLabel id="basicsss" value="#{com.quantidade}"  />
+						</center>
+					</p:column>
+					
+					<p:column style="width:70px;text-align: center" headerText="Fornecedor">
+						<p:outputLabel value="#{com.fornecedor.nome}"/>
+					</p:column>
+					
+					
+					<p:column  headerText="Remover" style="width: 10%;" >
+						<center>
+							<p:commandButton icon="fa fa-close" process="@this" actionListener="#{produtoMB.removeComponente(com)}" update=":form:matchGrid323,:form:dataTablexxx,:form:matchGridxxcc" >
+							</p:commandButton>
+						</center>
+					</p:column>
+					
+				</p:dataTable>
+					
+					
+				</p:panelGrid>
+				
+				<h:panelGrid columns="2" id="matchGridxxcc" cellpadding="5">
+				
+				<p:outputLabel  for="input22" value="Custo em Componentes:"  rendered="#{produtoMB.produzido}" />
+						<p:inputNumber rendered="#{produtoMB.produzido}" readonly="true"   id="input22" decimalSeparator="," thousandSeparator="." value="#{produtoMB.produtoPO.precoCompra}">  
+                	</p:inputNumber> 
+				
+					<p:outputLabel  for="input33" value="Lucro Estimado:"  rendered="#{produtoMB.produzido}" />
+						<p:inputNumber  rendered="#{produtoMB.produzido}" readonly="true" id="input33" decimalSeparator="," thousandSeparator="." value="#{produtoMB.produtoPO.lucro}">  
+                	</p:inputNumber>
+				   
+					
+				</h:panelGrid>
+						
+				
+				<p:separator></p:separator>
+		
+				<center>
+							
+					<p:commandButton value="Savar" ajax="false" icon="ui-icon-check"
+						update=":form:matchGrid" process="@this"
+						type="submit" actionListener="#{produtoMB.salvarProduto()}" />
+					
+					<p:commandButton value="Limpar" icon="ui-icon-close" actionListener="#{produtoMB.ini()}"
+						update="@form" process="@this"
+						style="margin-right:20px;">
+						<p:resetInput target=":form:matchGrid,:form:messages,:form:growl" />
+					</p:commandButton>
+				</center>
+		
+		
+			</p:panel>
+		
+				<p:spacer height="50" />
+				
+				
+				<p:panel style="width: 95%;">
+		
+					<p:dataTable id="carsTable" widgetVar="carsTable" var="pro" value="#{produtoMB.produtoPOsList}" 
+						paginator="true" rows="5">
+						<f:facet name="header">
+		           		 <span style="font-size: 15px">Produtos</span>
+		        		</f:facet>
+		
+		
+					<p:column  headerText="Produto" style="width:70px;text-align: center" >
+						<p:graphicImage value="#{imageProdutoMB.image}" height="50" width="50">
+    						<f:param name="id" value="#{pro.produtoId}" />
+						</p:graphicImage>
+				   </p:column>		
+					
+					
+					<p:column headerText="Código Produto" filterBy="#{pro.codigoProduto}" style="text-align: center" filterMatchMode="contains">
+						<p:outputLabel value="#{pro.codigoProduto}"/>
+					</p:column>
+					
+					<p:column headerText="Nome" filterBy="#{pro.nome}" style="text-align: center" filterMatchMode="contains">
+						<p:outputLabel value="#{pro.nome}"/>
+					</p:column>
+					
+					
+					<p:column filterBy="#{pro.produzido.booleanValue()}" style="width:200px;text-align: center" headerText="Produzido/Revenda"  filterMatchMode="equals">
+		            <f:facet name="filter">
+		                <p:selectOneButton onchange="PF('carsTable').filter()">
+		                    <f:converter converterId="javax.faces.Boolean" />
+		                    <f:selectItem itemLabel="Todos" itemValue="" />
+		                    <f:selectItem itemLabel="Prod." itemValue="true" />
+		                    <f:selectItem itemLabel="Revenda" itemValue="false" />
+		                </p:selectOneButton>
+		            </f:facet>
+		            <h:outputText value="#{pro.produzido ? 'Produzido': 'Revenda'}" />
+		        </p:column>
+					
+					
+					
+					<p:column headerText="Valor Venda" style="text-align: center" sortBy="#{pro.precoVenda}" >
+						<p:outputLabel value="#{pro.precoVenda}">
+							<f:convertNumber pattern="#,##0.00" />
+						</p:outputLabel>	
+					</p:column>
+					
+					
+					<p:column style="width:55px;text-align: center">
+						<f:facet name="header">
+							<p:outputLabel value="Editar" />
+						</f:facet>
+						<p:commandButton ajax="true" actionListener="#{produtoMB.selectProduto(pro)}"
+							update="@form" process="@this"  icon="ui-icon-pencil" title="Editar">
+						</p:commandButton>
+					</p:column>
+					
+				</p:dataTable>
+			</p:panel>
+		
+			
+					
+			</center>
+		
+	</p:layoutUnit>
+	</p:layout>	
+	
+	
+	
+	<p:dialog header="Produtos" widgetVar="prodDialog" modal="true" showEffect="fade" width="900px" hideEffect="fade" resizable="false">
+        	
+            <p:outputPanel id="display2ssss">
+				<p:dataTable id="dataTablexxx" var="com" value="#{produtoMB.componentePOsList}"
+						paginator="true" rows="5">
+						<f:facet name="header">
+		           		 <span style="font-size: 15px">Componentes</span>
+		        		</f:facet>
+		
+		
+					<p:column  headerText="Componente" style="width:70px;text-align: center" >
+						<p:graphicImage value="#{imageComponenteMB.image}" height="50" width="50" cache="false">
+    						<f:param name="id" value="#{com.componenteId}" />
+						</p:graphicImage>
+				   </p:column>		
+					
+					<p:column headerText="Nome" filterBy="#{usu.celular}" style="text-align: center" filterMatchMode="contains">
+						<p:outputLabel value="#{com.nome}"/>
+					</p:column>
+					
+					<p:column headerText="Valor Unitario" style="text-align: center" sortBy="#{com.valorUnitarioCompra}" >
+						<p:outputLabel value="#{com.valorUnitarioCompra}">
+							<f:convertNumber pattern="#,##0.00" />
+						</p:outputLabel>	
+					</p:column>
+					
+					<p:column headerText="Observação" style="text-align: center" >
+						<p:outputLabel value="#{com.observacao}"/>
+					</p:column>
+					
+					<p:column  headerText="Quantidate"  >
+						<center>
+						 <p:spinner id="basic" value="#{com.quantidade}" min="1" disabled="#{com.foiAdicionado}" >
+						 	<p:ajax process="@this" update="@this"></p:ajax>
+						 </p:spinner>
+						</center>
+					</p:column>
+					
+					
+					<p:column  headerText="Adiconar" style="width: 10%;" >
+						<center>
+							<p:commandButton rendered="#{!com.foiAdicionado}" icon="fa fa-plus-circle" process="@this" actionListener="#{produtoMB.adicionarComponente(com)}"  update="form:matchGrid323,form:dataTablexxx,:form:matchGridxxcc">
+							</p:commandButton>
+							
+							<p:graphicImage rendered="#{com.foiAdicionado}" url="../imagens/okLogo.jpg"  width="20px" height="20px" />
+						</center>
+					</p:column>
+					
+					
+					</p:dataTable>
+					
+			</p:outputPanel>
+ 			
+ 			<p:spacer height="20px"></p:spacer>
+ 			<p:separator></p:separator>
+ 			<div class="ui-fluid">
+				<p:commandButton value="Fechar" process="@this" style="height:50px" onclick="PF('prodDialog').hide()"/>
+			</div>
+ 			
+    </p:dialog>
+	
+	
+</h:form>
+
+
+
+
+</html>

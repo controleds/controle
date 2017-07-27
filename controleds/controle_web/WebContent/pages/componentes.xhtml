@@ -1,0 +1,358 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:o="http://omnifaces.org/ui">
+
+
+<f:view contentType="text/html">
+	<h:head>
+		<f:facet name="first">
+			<meta http-equiv="X-UA-Compatible" content="EmulateIE8" />
+			<meta content='text/html; charset=UTF-8' http-equiv="Content-Type" />
+		</f:facet>
+		<ui:include src="../css/all_css.css" />
+	</h:head>
+</f:view>
+
+
+<h:form id="form">
+	
+	<p:layout resizerTip="Resize Me" togglerTipClosed="Open Me"
+		togglerTipOpen="Close Me">
+	
+	<p:growl id="growl" showDetail="false" sticky="sticky" closable="true" life="3000" />
+	<p:messages id="messages" showDetail="false" closable="true" />
+	<ui:include src="../pages/leftPage.xhtml" />
+	<ui:include src="../pages/topPage.xhtml" />
+	
+	<p:layoutUnit  position="center">
+
+				          			
+  				
+				<center>
+				<p:panel id="cadUsuer" style="width: 95%;" >
+				<f:facet name="header">
+		           	<span style="font-size: 15px">Cadastro Componentes</span>
+		        </f:facet>
+				
+				
+				<h:panelGrid columns="2" id="matchGrid" cellpadding="5">
+		
+					<p:outputLabel for="nome" value="Nome: " />
+					<p:inputText id="nome" value="#{componenteMB.componentePO.nome}"
+						required="true" maxlength="100" style="width: 500px;" />
+					
+								
+		
+					<p:outputLabel  value="Fornecedor:"  />
+				    <h:panelGroup>
+				    
+				    <p:selectOneMenu id="forneOne" effect="fade" filter="true" filterMatchMode="startsWith" value="#{componenteMB.fornecedorselectItem}" style="width: 500px;vertical-align:middle"> 
+			            <f:selectItem itemLabel="Select One" itemValue="" />
+			            <f:selectItems value="#{componenteMB.fornecedoresSelectItems}" />
+			        </p:selectOneMenu>
+				        
+				        
+					<p:commandButton icon="fa fa-plus-circle" style="vertical-align:middle"   oncomplete="PF('fornecedorDi').show()"/>
+					</h:panelGroup>
+					
+					<h:outputLabel value="Foto" />
+					<p:fileUpload fileUploadListener="#{componenteMB.handleFileUpload}" mode="advanced" dragDropSupport="false"
+           				update="messages" sizeLimit="10000000" fileLimit="3" allowTypes="/(\.|\/)(gif|jpe?g|png)$/" />
+ 
+					
+					<p:outputLabel  for="input1" value="Valor Unitário:" />
+						<p:inputNumber required="true" id="input1" decimalSeparator="," thousandSeparator="." value="#{componenteMB.componentePO.valorUnitarioCompra}">  
+                	</p:inputNumber> 
+					
+				<p:outputLabel  for="input2" value="Quantidade Estoque:" />
+						<p:inputNumber required="true" id="input2"  minValue="0" value="#{componenteMB.componentePO.quantidadeEstoque}">  
+                	</p:inputNumber>	
+					
+				<p:outputLabel value="Observação"/>
+				<p:inputTextarea rows="3" cols="33" value="#{componenteMB.componentePO.observacao}" />
+				
+				
+				
+					
+					
+				</h:panelGrid>
+				
+				
+				
+						
+				
+				<p:separator></p:separator>
+		
+				<center>
+							
+					<p:commandButton value="Savar" ajax="false" icon="ui-icon-check"
+						update=":form:matchGrid" process="@this"
+						type="submit" actionListener="#{componenteMB.salvarComponente()}" />
+					
+					<p:commandButton value="Limpar" icon="ui-icon-close" actionListener="#{componenteMB.ini()}"
+						update="@form" process="@this"
+						style="margin-right:20px;">
+						<p:resetInput target=":form:matchGrid,:form:messages,:form:growl" />
+					</p:commandButton>
+				</center>
+		
+		
+			</p:panel>
+		
+			<p:spacer height="50" />
+				
+				
+				<p:panel style="width: 95%;">
+		
+					<p:dataTable id="dataTable222" var="com" value="#{componenteMB.componentePOsList}"
+						paginator="true" rows="5">
+						<f:facet name="header">
+		           		 <span style="font-size: 15px">Componentes</span>
+		        		</f:facet>
+		
+		
+					<p:column  headerText="Componente" style="width:70px;text-align: center" >
+						<p:graphicImage cache="false" value="#{imageComponenteMB.image}" height="50" width="50">
+    						<f:param name="id" value="#{com.componenteId}" />
+						</p:graphicImage>
+				   </p:column>		
+					
+					<p:column headerText="Nome" filterBy="#{com.nome}" style="text-align: center" filterMatchMode="contains">
+						<p:outputLabel value="#{com.nome}"/>
+					</p:column>
+					
+					<p:column headerText="Valor Unitario" style="text-align: center" sortBy="#{com.valorUnitarioCompra}" >
+						<p:outputLabel value="#{com.valorUnitarioCompra}">
+							<f:convertNumber pattern="#,##0.00" />
+						</p:outputLabel>	
+					</p:column>
+					
+					<p:column headerText="Quant/Estoque" style="text-align: center" sortBy="#{com.quantidadeEstoque}" >
+						<p:outputLabel value="#{com.quantidadeEstoque}">
+						</p:outputLabel>	
+					</p:column>
+					
+					<p:column headerText="Observação" style="text-align: center" >
+						<p:outputLabel value="#{com.observacao}"/>
+					</p:column>
+					
+					<p:column style="width:70px;text-align: center" headerText="Fornecedor">
+						<p:commandButton ajax="true" actionListener="#{componenteMB.selectFornecedor(com)}"
+							 update="form:viewFor" process="@this"  icon="fa fa-user-plus" title="Fornecedor" oncomplete="PF('viewFor').show()">
+						</p:commandButton>
+					</p:column>
+					
+					<p:column style="width:55px;text-align: center">
+						<f:facet name="header">
+							<p:outputLabel value="Editar" />
+						</f:facet>
+						<p:commandButton ajax="true" actionListener="#{componenteMB.selectComponente(com)}"
+							update="@form" process="@this"  icon="ui-icon-pencil" title="Editar">
+						</p:commandButton>
+					</p:column>
+					
+				</p:dataTable>
+			</p:panel>
+					
+			
+					
+			</center>
+		
+	</p:layoutUnit>
+	</p:layout>	
+	
+	<p:dialog id="fornecedorDi" header="Fornecedor" widgetVar="fornecedorDi" width="800px"  position="center"  
+		resizable="true" draggable="true" showEffect="clip" 
+		hideEffect="clip" modal="true">
+		
+		<h:panelGrid columns="2" id="matchGrid333" cellpadding="5">
+		
+					<p:outputLabel for="nome1" value="Nome: " />
+					<p:inputText id="nome1" value="#{componenteMB.clienteFornecedorPO.nome}"
+						 maxlength="100" style="width: 500px;" />
+					
+					<p:outputLabel for="site" value="Site: " />
+					<p:inputText id="site" value="#{componenteMB.clienteFornecedorPO.site}"
+						 maxlength="100" style="width: 500px;" />
+								
+		
+					<p:outputLabel for="email1" value="Email:" />
+					<p:inputText id="email1" value="#{componenteMB.clienteFornecedorPO.email}"
+						maxlength="100"  style="width: 500px;">
+						<f:validator validatorId="custom.emailValidator" />
+					</p:inputText>
+		
+					
+					<p:outputLabel for="tel" value="Telefone:" />
+					<p:inputMask id="tel" value="#{componenteMB.clienteFornecedorPO.telefone}" mask="(99) 9999-99-99"
+						  style="width: 500px;">
+					</p:inputMask>
+					
+					<p:outputLabel for="cel" value="Celular:" />
+					<p:inputMask id="cel" value="#{componenteMB.clienteFornecedorPO.celular}" mask="(99) 999-999-999"
+						  style="width: 500px;">
+					</p:inputMask>
+					
+					
+					<p:outputLabel value="Observação"/>
+					<p:inputTextarea rows="3" cols="33" value="#{componenteMB.clienteFornecedorPO.observacao}" />
+					
+				</h:panelGrid>
+				
+				
+				
+				<p:accordionPanel activeIndex="-1" id="acc">
+		        <p:tab title="Endereço" id="tab">
+		            <h:panelGrid columns="2"  id="endereco" cellpadding="5">
+		                
+		                <p:outputLabel for="cep" value="cep: " />
+						
+						
+						<h:panelGroup>
+						<p:inputText id="cep" value="#{componenteMB.enderecoPO.cep}"
+							 maxlength="100" style="width: 500px;" />
+		                
+		                <p:commandButton icon="fa fa-search-plus" process="endereco" update="endereco" actionListener="#{componenteMB.buscarCep()}"/> 
+		                </h:panelGroup>
+		                
+		                <p:outputLabel for="uf" value="UF: " />
+						<p:inputText id="uf" value="#{componenteMB.enderecoPO.uf}"
+							 maxlength="100" style="width: 500px;" />
+							 
+						<p:outputLabel for="cidade" value="Cidade: " />
+						<p:inputText id="cidade" value="#{componenteMB.enderecoPO.cidade}"
+							 maxlength="100" style="width: 500px;" />
+						
+						<p:outputLabel for="bairro" value="Bairro: " />
+						<p:inputText id="bairro" value="#{componenteMB.enderecoPO.bairro}"
+							 maxlength="100" style="width: 500px;" />
+							 
+						<p:outputLabel for="rua" value="Rua: " />
+						<p:inputText id="rua" value="#{componenteMB.enderecoPO.rua}"
+							 maxlength="100" style="width: 500px;" />
+							 
+						<p:outputLabel for="numero" value="Numero: " />
+						<p:inputText id="numero" value="#{componenteMB.enderecoPO.numero}"
+							 maxlength="100" style="width: 500px;" />	 	 	 
+		                
+		            </h:panelGrid>
+		        </p:tab>
+		        
+		    	</p:accordionPanel>
+				
+				
+				<p:separator></p:separator>
+		
+				<center>
+					
+				
+				<p:commandButton value="Savar" ajax="true" icon="ui-icon-check"
+						 process="@this,matchGrid333,form:acc:endereco" 
+						 update="fornecedorDi,:form:messages,:form:growl,forneOne"
+						 actionListener="#{componenteMB.salvarFor()}" 
+						oncomplete="fornecedorDi.hide()"
+						 />
+					
+					<p:commandButton value="Limpar" icon="ui-icon-close" actionListener="#{componenteMB.limparPopUp}"
+						update="matchGrid333,form:acc:endereco" process="@this"
+						style="margin-right:20px;">
+						
+					</p:commandButton>
+				</center>
+		
+	</p:dialog>
+
+
+
+
+<p:dialog id="viewFor" header="Fornecedor" widgetVar="viewFor" width="800px"   position="center"  
+		resizable="true" draggable="true" showEffect="clip" 
+		hideEffect="clip" modal="true">
+		
+		<h:panelGrid columns="2" id="matchGrid4" cellpadding="5">
+		
+					<p:outputLabel for="nome4" value="Nome: " />
+					<p:inputText id="nome4" value="#{componenteMB.viewClienteFornecedorPO.nome}" readonly="true" 
+						 maxlength="100" style="width: 500px;" />
+					
+					<p:outputLabel for="site4" value="Site: " />
+					<p:inputText id="site4" value="#{componenteMB.viewClienteFornecedorPO.site}" readonly="true" 
+						 maxlength="100" style="width: 500px;" />
+								
+		
+					<p:outputLabel for="email14" value="Email:" />
+					<p:inputText id="email14" value="#{componenteMB.viewClienteFornecedorPO.email}" readonly="true" 
+						maxlength="100"  style="width: 500px;">
+						<f:validator validatorId="custom.emailValidator" />
+					</p:inputText>
+		
+					
+					<p:outputLabel for="tel4" value="Telefone:" />
+					<p:inputMask id="tel4" value="#{componenteMB.viewClienteFornecedorPO.telefone}" mask="(99) 9999-99-99" readonly="true" 
+						  style="width: 500px;">
+					</p:inputMask>
+					
+					<p:outputLabel for="cel4" value="Celular:" />
+					<p:inputMask id="cel4" value="#{componenteMB.viewClienteFornecedorPO.celular}" mask="(99) 999-999-999" readonly="true" 
+						  style="width: 500px;">
+					</p:inputMask>
+					
+					
+					<p:outputLabel value="Observação"/>
+					<p:inputTextarea rows="3" cols="33" value="#{componenteMB.viewClienteFornecedorPO.observacao}"  readonly="true" />
+					
+				</h:panelGrid>
+				
+				
+				
+				<p:accordionPanel activeIndex="-1" id="acc4">
+		        <p:tab title="Endereço" id="tab4">
+		            <h:panelGrid columns="2"  id="endereco" cellpadding="5">
+		                
+		                <p:outputLabel for="cep4" value="cep: " />
+						
+						
+						<h:panelGroup>
+						<p:inputText id="cep4" value="#{componenteMB.enderecoPO.cep}" readonly="true"
+							 maxlength="100" style="width: 500px;" />
+		                </h:panelGroup>
+		                
+		                <p:outputLabel for="uf4" value="UF: " />
+						<p:inputText id="uf4" value="#{componenteMB.viewEnderecoPO.uf}" readonly="true"
+							 maxlength="100" style="width: 500px;" />
+							 
+						<p:outputLabel for="cidade4" value="Cidade: " />
+						<p:inputText id="cidade4" value="#{componenteMB.viewEnderecoPO.cidade}" readonly="true"
+							 maxlength="100" style="width: 500px;" />
+						
+						<p:outputLabel for="bairro4" value="Bairro: " />
+						<p:inputText id="bairro4" value="#{componenteMB.viewEnderecoPO.bairro}" readonly="true"
+							 maxlength="100" style="width: 500px;" />
+							 
+						<p:outputLabel for="rua4" value="Rua: " />
+						<p:inputText id="rua4" value="#{componenteMB.viewEnderecoPO.rua}" readonly="true"
+							 maxlength="100" style="width: 500px;" />
+							 
+						<p:outputLabel for="numero4" value="Numero: " />
+						<p:inputText id="numero4" value="#{componenteMB.viewEnderecoPO.numero}" readonly="true"
+							 maxlength="100" style="width: 500px;" />	 	 	 
+		                
+		            </h:panelGrid>
+		        </p:tab>
+		        
+		    	</p:accordionPanel>
+				
+	</p:dialog>
+	
+	
+</h:form>
+
+
+
+
+</html>
