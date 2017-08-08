@@ -207,6 +207,7 @@ public class ProdutoBOImp extends AbstractBO implements ProdutoBO {
 		componentePOParse.setFoto(componentePO.getFoto());
 		componentePOParse.setObservacao(componentePO.getObservacao());
 		componentePOParse.setValorUnitarioCompra(componentePO.getValorUnitarioCompra());
+		componentePOParse.setQuantidadeEstoque(componentePO.getQuantidadeEstoque());
 	}
 
 	@Override

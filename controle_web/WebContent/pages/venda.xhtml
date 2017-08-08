@@ -51,7 +51,7 @@
 				          			
   				
 				<center>
-				<p:panel id="cadUsuer" style="width: 95%;" >
+				<p:panel id="cadUsuer"  >
 				<f:facet name="header">
 		           	<span style="font-size: 15px">Vendas</span>
 		        </f:facet>
@@ -88,7 +88,7 @@
 				
 				<p:panelGrid columns="2" id="matchGrid323" >
 					
-					<p:commandButton value="Adicionar Produtos à Venda" onclick="PF('prodDialog').show()" style="width:150px;height:150px" />
+					<p:commandButton value="Adicionar Produtos à Venda" onclick="PF('prodDialog').show()" style="width:130px;height:150px" />
 					
 					
 					<p:dataTable id="dataTable" var="pro" sortBy="#{pro.produtoPO.produtoId}" widgetVar="carsTable" value="#{vendaMB.produtosAdicionados}"
@@ -98,18 +98,18 @@
 		        		</f:facet>
 						
 						
-					<p:column  headerText="Produto" style="width:70px;text-align: center" >
+					<p:column  headerText="Produto" style="text-align: center" >
 						<p:graphicImage value="#{imageProdutoMB.image}" height="50" width="50">
     						<f:param name="id" value="#{pro.produtoPO.produtoId}" />
 						</p:graphicImage>
 				   </p:column>		
 					
 					
-					<p:column headerText="Código Produto" filterBy="#{pro.produtoPO.codigoProduto}" style="text-align: center" filterMatchMode="contains">
+					<p:column headerText="Código Produto"  style="text-align: center" >
 						<p:outputLabel value="#{pro.produtoPO.codigoProduto}"/>
 					</p:column>
 					
-					<p:column headerText="Nome" filterBy="#{pro.produtoPO.nome}" style="text-align: center" filterMatchMode="contains">
+					<p:column headerText="Nome"  style="text-align: center" >
 						<p:outputLabel value="#{pro.produtoPO.nome}"/>
 					</p:column>
 					
@@ -122,7 +122,7 @@
 					</p:column>
 					
 					
-					<p:column  headerText="Quant." style="width: 40px;" >
+					<p:column  headerText="Quant."  >
 						<center>
 						 	<p:outputLabel value="#{pro.quantidade}"/>
 						</center>
@@ -140,7 +140,7 @@
 						
 						
 					
-					<p:column  headerText="Remover" style="width: 10%;" >
+					<p:column  headerText="Remover"  >
 						<center>
 							<p:commandButton icon="fa fa-close" process="@this" actionListener="#{vendaMB.removeProduto(pro)}" update=":form:matchGrid323,:form:dataTablexxx,form:cadUsuer" >
 							</p:commandButton>

@@ -37,14 +37,19 @@ public class ImageComponenteMB {
         }
         else {
             String id = context.getExternalContext().getRequestParameterMap().get("id");
-            ComponentePO componentePO = service.findComponente(new Long(id));
-            if (componentePO != null && componentePO.getFoto() != null){
-            	byte[] foto = service.findComponente(new Long(id)).getFoto();
-                return new DefaultStreamedContent(new ByteArrayInputStream(foto));
-            } else {
-            	return new DefaultStreamedContent(new ByteArrayInputStream(getFotoDefault()));
-            } 
+            
+            if (id != null && !id.equals("")){
+            	
+            	ComponentePO componentePO = service.findComponente(new Long(id));
+                if (componentePO != null && componentePO.getFoto() != null){
+                	byte[] foto = service.findComponente(new Long(id)).getFoto();
+                    return new DefaultStreamedContent(new ByteArrayInputStream(foto));
+                } else {
+                	return new DefaultStreamedContent(new ByteArrayInputStream(getFotoDefault()));
+                }
+            }
         }
+		return null;
     }
     
     
