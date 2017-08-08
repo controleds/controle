@@ -1,0 +1,319 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:o="http://omnifaces.org/ui">
+
+
+<f:view contentType="text/html">
+	<h:head>
+		<f:facet name="first">
+			<meta http-equiv="X-UA-Compatible" content="EmulateIE8" />
+			<meta content='text/html; charset=UTF-8' http-equiv="Content-Type" />
+		</f:facet>
+		<ui:include src="../css/all_css.css" />
+	</h:head>
+</f:view>
+
+
+<h:form id="form">
+	
+	<p:layout resizerTip="Resize Me" togglerTipClosed="Open Me"
+		togglerTipOpen="Close Me">
+	
+	<p:growl id="growl" showDetail="false" sticky="true" closable="true" />
+	<p:messages id="messages" showDetail="false" closable="true" />
+	<ui:include src="../pages/leftPage.xhtml" />
+	<ui:include src="../pages/topPage.xhtml" />
+	
+	<p:layoutUnit  position="center">
+
+  				
+				<center>
+				<p:panel id="cadUsuer" style="width: 95%;" >
+				<f:facet name="header">
+		           	<span style="font-size: 15px">Consulta Vendas</span>
+		        </f:facet>
+				
+				
+				<h:panelGrid columns="4" id="matchGrid" cellpadding="5">
+				
+				<p:outputLabel for="popup" value="Data Inicio:" />
+        		<p:calendar id="popup" value="#{consultaVendaMB.dataIni}" required="true"  requiredMessage="O Campo Data Venda é Obrigatório" locale="pt" pattern="dd/MM/yyyy" />
+ 					
+ 				<p:outputLabel for="popup2" value="Data Fim:" />
+        		<p:calendar id="popup2" value="#{consultaVendaMB.dataFim}" required="true"  requiredMessage="O Campo Data Venda é Obrigatório" locale="pt" pattern="dd/MM/yyyy" />
+ 					
+				</h:panelGrid>	
+				
+				<h:panelGrid id="xxc">
+				<h:panelGrid cellpadding="5" columns="3" >
+ 					<p:outputLabel value="Filtrar Por Vendedor?"/>
+ 					<p:selectBooleanButton id="value2x" value="#{consultaVendaMB.vendedorSN}" onLabel="Sim" offLabel="Não" onIcon="ui-icon-check" offIcon="ui-icon-close" style="width:60px">
+            			<p:ajax process="xxc" update="xxc" listener="#{consultaVendaMB.limparVendores()}"/>
+        			</p:selectBooleanButton>
+ 				
+ 				
+		        <p:selectManyMenu id="advanced" rendered="#{consultaVendaMB.vendedorSN}" value="#{consultaVendaMB.vendedoresSelectList}" converter="vendendorConverter"
+		                          var="t" filter="true" filterMatchMode="contains" showCheckbox="true">
+		            <f:selectItems value="#{consultaVendaMB.vendedoresList}" var="theme"  itemValue="#{theme}" />
+		 
+		            <p:column>
+		                <p:graphicImage value="#{imageVendedoresMB.image}" height="20" width="20" cache="false" >
+    						<f:param name="id" value="#{t.vendedorId}" />
+						</p:graphicImage>
+	
+		            </p:column>
+		 
+		            <p:column>
+		                <h:outputText value="#{t.nome}" />
+		            </p:column>
+		           
+		        </p:selectManyMenu>
+				</h:panelGrid>
+				</h:panelGrid>
+								
+					<p:commandButton value="Consultar Vendas" ajax="false" icon="fa fa-search" style="width :500px"
+						update="@form" process="@this"
+						type="submit" actionListener="#{consultaVendaMB.consutarVendas}" />
+			
+			</p:panel>
+			
+			
+			<p:spacer height="10" />
+				
+				
+				<p:panel style="width: 95%;">
+		
+					<p:dataTable id="dataTable222" var="vendas" value="#{consultaVendaMB.vendasList}"     
+						paginator="true" rows="8" widgetVar="carsTable">
+						<f:facet name="header">
+		           		 <span style="font-size: 15px">Vendas</span>
+		        		</f:facet>
+		
+					
+					<p:column style="width:16px">
+			            <p:rowToggler />
+			        </p:column>
+					
+					<p:column  headerText="Data Venda" style="text-align: center" >
+						<p:outputLabel value="#{vendas.dataVenda}">
+							<f:convertDateTime pattern="dd/MM/yyyy" />
+						</p:outputLabel>	
+				   </p:column>		
+					
+					<p:column  headerText="Vendedor" style="text-align: center" >
+						<p:outputLabel value="#{vendas.vendedorPO.nome}"/>
+				   </p:column>
+				   
+				   <p:column  headerText="Vendedor %" style="text-align: center" >
+						<p:outputLabel value="#{vendas.vendedorPO.percentualVenda} %" />
+				   </p:column>
+				   
+				   <p:column  headerText="Desconto %" style="text-align: center" >
+						<p:outputLabel value="#{vendas.percDesc} %">
+						</p:outputLabel>
+						
+				   </p:column>
+				   
+					<p:column  headerText="$Vl sem Desc" style="text-align: center" >
+						<p:outputLabel value="#{vendas.valorTotal}" style="text-align: center;color: blue;">
+							<f:convertNumber pattern="#,##0.00" />
+						</p:outputLabel>	
+				   </p:column>
+				   
+				   
+				   <p:column  headerText="Desconto $" style="text-align: center" >
+						<p:outputLabel value="#{vendas.valorDesc}" style="text-align: center;color: red;">
+							<f:convertNumber pattern="#,##0.00" />
+						</p:outputLabel>
+						
+				   </p:column>
+				   
+				
+					<p:column  headerText="$Vl FINAL DA VENDA" style="text-align: center" >
+						<p:outputLabel value="#{vendas.valorFinalVenda}" style="text-align: center;color: blue;">
+							<f:convertNumber pattern="#,##0.00" />
+						</p:outputLabel>
+				   </p:column>
+				   
+				   <p:column  headerText="Gastos Prod." style="text-align: center" >
+						<p:outputLabel value="#{consultaVendaMB.gastosProd(vendas)}" style="text-align: center;color: red;">
+							<f:convertNumber pattern="#,##0.00" />
+						</p:outputLabel>
+				   </p:column>
+				
+				   <p:column  headerText="$Vl Comissão Vendedor" style="text-align: center;" >
+						<p:outputLabel value="#{consultaVendaMB.gastosComissao(vendas)}" style="text-align: center;color: red;">
+							<f:convertNumber pattern="#,##0.00" />
+						</p:outputLabel>
+				   </p:column>
+				   
+				   <p:column  headerText="Lucro" style="text-align: center" >
+						<p:outputLabel value="#{consultaVendaMB.lucro(vendas)}" style="text-align: center;color: blue;">
+							<f:convertNumber pattern="#,##0.00" />
+						</p:outputLabel>
+				   </p:column>
+				   
+				   <p:rowExpansion>
+			            <center>
+							<p:dataTable   id="dataTable2" var="item" widgetVar="usersTable" value="#{vendas.produtos}"  rows="5">
+							
+						<p:column  headerText="Cód venda:"  style="text-align: center" >
+							<p:outputLabel value="#{vendas.vendaId}" />
+						</p:column>	
+						
+						<p:column  headerText="Cliente:"  style="text-align: center" >
+							<p:outputLabel value="#{vendas.clientePO.nome}" />
+						</p:column>
+							
+			        	<p:column  headerText="Produto" style="text-align: center" >
+							<p:graphicImage value="#{imageProdutoMB.image}" height="30" width="30">
+	    						<f:param name="id" value="#{item.produtoPO.produtoId}" />
+							</p:graphicImage>
+					   </p:column>		
+			        	
+			        	<p:column  headerText="Nome Produto:"  >
+							<p:outputLabel value="#{item.produtoPO.nome}" />
+						</p:column>
+						
+						
+						<p:column  headerText="Código Produto"  >
+							<p:outputLabel value="#{item.produtoPO.codigoProduto}"/>
+						</p:column>
+						
+						<p:column  style="text-align: center" headerText="Produzido/Revenda"  >
+		            		<h:outputText value="#{item.produtoPO.produzido ? 'Produzido': 'Revenda'}" />
+		        		</p:column>
+					
+					
+					
+					<p:column headerText="Valor Uni" style="text-align: center"  >
+						<p:outputLabel value="#{item.valorVendaUni}">
+							<f:convertNumber pattern="#,##0.00" />
+						</p:outputLabel>	
+					</p:column>
+					
+					<p:column headerText="Quantidade" style="text-align: center"  >
+						<p:outputLabel value="#{item.quantidade}"/>
+					</p:column>
+					
+					<p:column headerText="Valor Total" style="text-align: center"  >
+						<p:outputLabel value="#{item.valorVendaUni * item.quantidade }">
+							<f:convertNumber pattern="#,##0.00" />
+						</p:outputLabel>	
+					</p:column>
+											
+						
+					</p:dataTable>
+					</center>				
+
+			        </p:rowExpansion>
+				   
+				   
+				
+				<p:columnGroup type="footer">
+					<p:row>
+						<p:column colspan="5"  style="text-align:right; font-weight:bold;" footerText="Totais: " />
+						<p:column>
+							<f:facet name="footer">
+                				<h:outputText value="#{consultaVendaMB.totalVlSemDesconto}">
+                    				<f:convertNumber pattern="#,##0.00"/>
+                				</h:outputText>
+            					</f:facet>
+            			</p:column>
+            			
+            			
+            			
+            			<p:column>
+							<f:facet name="footer">
+                				<h:outputText value="#{consultaVendaMB.totalDesconto}">
+                    				<f:convertNumber pattern="#,##0.00"/>
+                				</h:outputText>
+            					</f:facet>
+            			</p:column>
+            			
+            			<p:column>
+							<f:facet name="footer">
+                				<h:outputText value="#{consultaVendaMB.totalVenda}">
+                    				<f:convertNumber pattern="#,##0.00"/>
+                				</h:outputText>
+            					</f:facet>
+            			</p:column>
+            			
+            			<p:column>
+							<f:facet name="footer">
+                				<h:outputText value="#{consultaVendaMB.totalGastoProd}">
+                    				<f:convertNumber pattern="#,##0.00"/>
+                				</h:outputText>
+            					</f:facet>
+            			</p:column>
+            			
+            			<p:column>
+							<f:facet name="footer">
+                				<h:outputText value="#{consultaVendaMB.totalComissao}">
+                    				<f:convertNumber pattern="#,##0.00"/>
+                				</h:outputText>
+            					</f:facet>
+            			</p:column>
+            			
+            			<p:column>
+							<f:facet name="footer">
+                				<h:outputText value="#{consultaVendaMB.totalLucro}">
+                    				<f:convertNumber pattern="#,##0.00"/>
+                				</h:outputText>
+            					</f:facet>
+            			</p:column>
+            					 
+					</p:row>
+				</p:columnGroup>   
+										
+				</p:dataTable>
+			</p:panel>
+
+	
+
+</center>
+</p:layoutUnit>	
+</p:layout>
+
+
+
+
+</h:form>
+
+
+<script type="text/javascript">
+PrimeFaces.locales['pt'] = {  
+                closeText: 'Fechar',  
+                prevText: 'Anterior',  
+                nextText: 'Próximo',  
+                currentText: 'Começo',  
+                monthNames: ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],  
+                monthNamesShort: ['Jan','Fev','Mar','Abr','Mai','Jun', 'Jul','Ago','Set','Out','Nov','Dez'],  
+                dayNames: ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'],  
+                dayNamesShort: ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'],  
+                dayNamesMin: ['D','S','T','Q','Q','S','S'],  
+                weekHeader: 'Semana',  
+                firstDay: 1,  
+                isRTL: false,  
+                showMonthAfterYear: false,  
+                yearSuffix: '',  
+                timeOnlyTitle: 'Só Horas',  
+                timeText: 'Tempo',  
+                hourText: 'Hora',  
+                minuteText: 'Minuto',  
+                secondText: 'Segundo',  
+                currentText: 'Data Atual',  
+                ampm: false,  
+                month: 'Mês',  
+                week: 'Semana',  
+                day: 'Dia',  
+                allDayText : 'Todo Dia'  
+            };
+</script>>
+
+</html>

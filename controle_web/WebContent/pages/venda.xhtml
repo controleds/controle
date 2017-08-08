@@ -1,0 +1,493 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:o="http://omnifaces.org/ui">
+
+
+<f:view contentType="text/html">
+	<h:head>
+		<f:facet name="first">
+			<meta http-equiv="X-UA-Compatible" content="EmulateIE8" />
+			<meta content='text/html; charset=UTF-8' http-equiv="Content-Type" />
+		</f:facet>
+		<ui:include src="../css/all_css.css" />
+	</h:head>
+</f:view>
+
+
+
+<script type="text/javascript">
+
+
+		jQuery(document).ready(function(){
+			$(document).keydown(function(e) {
+				if(e.which==17 || e.which==74 || e.which==13){
+		            e.preventDefault();
+		        }else{
+		            console.log(e.which);
+		        }
+			});
+		});
+		
+</script>
+
+
+<h:form id="form">
+	
+	<p:layout resizerTip="Resize Me" togglerTipClosed="Open Me"
+		togglerTipOpen="Close Me">
+	
+	<p:growl id="growl" showDetail="false" sticky="sticky" life="3000" closable="true" />
+	<p:messages id="messages" showDetail="false" closable="true" />
+	<ui:include src="../pages/leftPage.xhtml" />
+	<ui:include src="../pages/topPage.xhtml" />
+	
+	<p:layoutUnit  position="center">
+
+				          			
+  				
+				<center>
+				<p:panel id="cadUsuer" style="width: 95%;" >
+				<f:facet name="header">
+		           	<span style="font-size: 15px">Vendas</span>
+		        </f:facet>
+				
+				
+				<h:panelGrid columns="2" id="matchGrid" cellpadding="5">
+		
+		
+					<p:outputLabel  value="Cliente:"  />
+				    <h:panelGroup>
+				    
+				    <p:selectOneMenu id="forneOne" effect="fade" filter="true" filterMatchMode="startsWith" value="#{vendaMB.clienteIdSelect}" style="width: 500px;vertical-align:middle"> 
+			            <f:selectItem itemLabel="Select One" itemValue="" />
+			            <f:selectItems value="#{vendaMB.clientesSelectItems}" />
+			        </p:selectOneMenu>
+				    
+					<p:commandButton icon="fa fa-plus-circle" style="vertical-align:middle"   oncomplete="PF('cliDi').show()"/>
+					</h:panelGroup>
+					
+					<p:outputLabel  value="Vendedor:" for="forneOne1"  />
+					<p:selectOneMenu id="forneOne1" effect="fade" filter="true" required="true" filterMatchMode="startsWith" value="#{vendaMB.vendedorIdSelect}" style="width: 500px;vertical-align:middle"> 
+			            <f:selectItem itemLabel="Select One" itemValue="" />
+			            <f:selectItems value="#{vendaMB.vendedoresSelectItems}" />
+			            
+			        </p:selectOneMenu>
+					
+					
+					<p:outputLabel for="popup" value="Data Venda:" />
+        			<p:calendar id="popup" value="#{vendaMB.vendaPO.dataVenda}" required="true"  requiredMessage="O Campo Data Venda é Obrigatório" locale="pt" pattern="dd/MM/yyyy" />
+ 					
+					
+				</h:panelGrid>
+				
+				
+				<p:panelGrid columns="2" id="matchGrid323" >
+					
+					<p:commandButton value="Adicionar Produtos à Venda" onclick="PF('prodDialog').show()" style="width:150px;height:150px" />
+					
+					
+					<p:dataTable id="dataTable" var="pro" sortBy="#{pro.produtoPO.produtoId}" widgetVar="carsTable" value="#{vendaMB.produtosAdicionados}"
+						paginator="true" rows="5">
+						<f:facet name="header">
+		           		 <span style="font-size: 15px">Produtos Add Venda</span>
+		        		</f:facet>
+						
+						
+					<p:column  headerText="Produto" style="width:70px;text-align: center" >
+						<p:graphicImage value="#{imageProdutoMB.image}" height="50" width="50">
+    						<f:param name="id" value="#{pro.produtoPO.produtoId}" />
+						</p:graphicImage>
+				   </p:column>		
+					
+					
+					<p:column headerText="Código Produto" filterBy="#{pro.produtoPO.codigoProduto}" style="text-align: center" filterMatchMode="contains">
+						<p:outputLabel value="#{pro.produtoPO.codigoProduto}"/>
+					</p:column>
+					
+					<p:column headerText="Nome" filterBy="#{pro.produtoPO.nome}" style="text-align: center" filterMatchMode="contains">
+						<p:outputLabel value="#{pro.produtoPO.nome}"/>
+					</p:column>
+					
+					
+					
+					<p:column headerText="Valor Uni." style="text-align: center" sortBy="#{pro.produtoPO.precoVenda}" >
+						<p:outputLabel value="#{pro.produtoPO.precoVenda}">
+							<f:convertNumber pattern="#,##0.00" />
+						</p:outputLabel>	
+					</p:column>
+					
+					
+					<p:column  headerText="Quant." style="width: 40px;" >
+						<center>
+						 	<p:outputLabel value="#{pro.quantidade}"/>
+						</center>
+					</p:column>
+					
+					
+					
+					
+					<p:column headerText="Valor Venda" style="text-align: center" sortBy="#{pro.produtoPO.precoVenda}" >
+						<p:outputLabel value="#{pro.produtoPO.precoVenda * pro.quantidade}">
+							<f:convertNumber pattern="#,##0.00" />
+						</p:outputLabel>	
+					</p:column>
+						
+						
+						
+					
+					<p:column  headerText="Remover" style="width: 10%;" >
+						<center>
+							<p:commandButton icon="fa fa-close" process="@this" actionListener="#{vendaMB.removeProduto(pro)}" update=":form:matchGrid323,:form:dataTablexxx,form:cadUsuer" >
+							</p:commandButton>
+						</center>
+					</p:column>
+					
+					<p:columnGroup type="footer">
+					<p:row>
+						<p:column colspan="5"  style="text-align:right; font-weight:bold;" footerText="Valor Total: " />
+						<p:column>
+							<f:facet name="footer">
+                				<h:outputText value="#{vendaMB.calculaTotalVenda()}">
+                    				<f:convertNumber pattern="#,##0.00"/>
+                				</h:outputText>
+            					</f:facet>
+            			</p:column>		 
+					</p:row>
+				</p:columnGroup>
+					
+					
+				</p:dataTable>
+					
+					
+				</p:panelGrid>
+			
+			
+			<div class="ui-fluid" >
+				<p:commandButton  rendered="#{vendaMB.habilitaVenda}" id="bt" onclick="PF('dlg').show()" value="#{vendaMB.totalString()}" style="height:50px" update=":form:painel1" />
+			</div>
+			
+					
+			
+			
+			</p:panel>
+			
+
+
+	
+
+</center>
+</p:layoutUnit>	
+</p:layout>
+
+
+	<p:dialog widgetVar="dlg"  closable="false" showEffect="fade" header="Confirmação" hideEffect="fade">
+		       <p:panel id="painel1">
+		         <center> 
+		         <h:panelGrid id="grifPop" >
+		         	 <h:outputText  style="font-size:18px;font-weight: bold;" value="#{vendaMB.totalString()}"/>
+		         	 <p:selectBooleanCheckbox value="#{vendaMB.habilitaDesc}">
+            			<p:ajax update="form:painel1" process="@this" />
+        			</p:selectBooleanCheckbox>
+		         </h:panelGrid>
+		         
+		         <p:panel id="painel2" rendered="#{vendaMB.habilitaDesc}">
+		         
+		         <h:panelGrid id="grifPop3xxx" columns="2" >
+		         
+		         <p:outputLabel value="Percentual desconto"/>
+		         <h:panelGrid columns="1" style="margin-bottom: 10px">
+			        <p:spinner id="ajaxSpinner" value="#{vendaMB.percentDecs}" min="0" size="5">
+                		<p:ajax listener="#{vendaMB.calculaDesconto}" process="form:grifPop3xxx" update="form:grifPop3xxx"  />
+            		</p:spinner>
+			        
+			    </h:panelGrid>
+		         
+		         <p:outputLabel value="Valor Desconto:"/>
+		         
+		         <p:inputNumber value="#{vendaMB.valorDesc}" readonly="true" size="12"/>
+		         
+		         
+		         <p:outputLabel value="Valor Total Com Desconto:"/>
+		         <p:inputNumber value="#{vendaMB.valorTotalVenda}" readonly="true" size="12"/>
+		         </h:panelGrid>
+		         
+		         <p:spacer height="10px"></p:spacer>
+		         <center>
+		         <p:commandButton value="Atualizar Total com Desconto" update="form:painel1" process="form:painel1"    styleClass="ui-confirmdialog-yes" icon="ui-icon-check" /> 
+		         </center>
+		         </p:panel>
+		        
+		         
+		         <h:panelGrid id="grifPop2" columns="2" >
+		         	
+		         	<p:selectOneRadio id="console" value="#{vendaMB.vendaPO.formaPagamento}" >
+						<p:ajax process="painel1" update="painel1" />	         	
+			            <f:selectItem itemLabel="Dinheiro" itemValue="D" noSelectionOption="true" />
+			            <f:selectItem itemLabel="Cartão de Débido" itemValue="CD" />
+			            <f:selectItem itemLabel="Cartão de Crédito" itemValue="CC" />
+			            <f:selectItem itemLabel="Cheque" itemValue="CH" />
+			            <f:selectItem itemLabel="Outros" itemValue="O" />
+        			</p:selectOneRadio>
+		         	
+		         </h:panelGrid>
+		       	
+				<p:separator id="id1" rendered="#{vendaMB.vendaPO.formaPagamento == 'D'}"></p:separator >
+				
+				
+				<h:panelGrid id="id2" rendered="#{vendaMB.vendaPO.formaPagamento == 'D'}" columns="2">
+					<h:outputLabel value="Calcular Troco ?" />
+					
+					<p:selectBooleanButton id="value2" value="#{vendaMB.troco}" onLabel="Yes" offLabel="No" onIcon="ui-icon-check" offIcon="ui-icon-close" style="width:60px">
+            			<p:ajax process="painel1" update="painel1" />
+        			</p:selectBooleanButton>
+				</h:panelGrid>
+				
+				<h:panelGrid id="id3" columns="4" rendered="#{vendaMB.vendaPO.formaPagamento == 'D' and vendaMB.troco}">
+					
+					<h:outputLabel value="Cliente:" />
+					<p:inputNumber id="input1" value="#{vendaMB.valorCliente}">
+						<p:ajax listener="#{vendaMB.calculaTroco}" process="@this" update="input2" /> 
+					</p:inputNumber>
+					<h:outputLabel value="Troco:" />
+					<p:inputNumber id="input2" value="#{vendaMB.valorTroco}"/>  
+					
+				</h:panelGrid>	       
+				
+				<p:separator></p:separator>
+		       	<p:spacer height="20px"></p:spacer>
+		        <p:commandButton value="Fechar Venda" oncomplete="PF('dlg').hide()" type="submit" update="@form" process="@this" ajax="false"  actionListener="#{vendaMB.fecharVenda}" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+		        <p:commandButton value="Cancelar" oncomplete="PF('dlg').hide()" actionListener="#{vendaMB.cancelaVenda}" process="@this" update="form:painel1"  styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+		 		</center>
+		 		
+		 		</p:panel>
+		 		
+		 </p:dialog>
+
+
+<p:dialog id="cliDi" header="Clientes" widgetVar="cliDi" width="800px"  position="center"  
+		resizable="true" draggable="true" showEffect="clip" 
+		hideEffect="clip" modal="true">
+		
+		<h:panelGrid columns="2" id="matchGrid333" cellpadding="5">
+		
+					<p:outputLabel for="nome1" value="Nome: " />
+					<p:inputText id="nome1" value="#{vendaMB.clienteInsert.nome}"
+						 maxlength="100" style="width: 500px;" />
+					
+					<p:outputLabel for="site" value="Site: " />
+					<p:inputText id="site" value="#{vendaMB.clienteInsert.site}"
+						 maxlength="100" style="width: 500px;" />
+								
+		
+					<p:outputLabel for="email1" value="Email:" />
+					<p:inputText id="email1" value="#{vendaMB.clienteInsert.email}"
+						maxlength="100"  style="width: 500px;">
+						<f:validator validatorId="custom.emailValidator" />
+					</p:inputText>
+		
+					
+					<p:outputLabel for="tel" value="Telefone:" />
+					<p:inputMask id="tel" value="#{vendaMB.clienteInsert.telefone}" mask="(99) 9999-99-99"
+						  style="width: 500px;">
+					</p:inputMask>
+					
+					<p:outputLabel for="cel" value="Celular:" />
+					<p:inputMask id="cel" value="#{vendaMB.clienteInsert.celular}" mask="(99) 999-999-999"
+						  style="width: 500px;">
+					</p:inputMask>
+					
+					
+					<p:outputLabel value="Observação"/>
+					<p:inputTextarea rows="3" cols="33" value="#{vendaMB.clienteInsert.observacao}" />
+					
+				</h:panelGrid>
+				
+				
+					
+				<p:accordionPanel activeIndex="-1" id="acc">
+		        <p:tab title="Endereço" id="tab">
+		            <h:panelGrid columns="2"  id="endereco" cellpadding="5">
+		                
+		                <p:outputLabel for="cep" value="cep: " />
+						
+						
+						<h:panelGroup>
+						<p:inputText id="cep" value="#{vendaMB.enderecoPOInsert.cep}"
+							 maxlength="100" style="width: 500px;" />
+		                
+		                <p:commandButton icon="fa fa-search-plus" process="endereco" update="endereco" actionListener="#{vendaMB.buscarCep()}"/> 
+		                </h:panelGroup>
+		                
+		                <p:outputLabel for="uf" value="UF: " />
+						<p:inputText id="uf" value="#{vendaMB.enderecoPOInsert.uf}"
+							 maxlength="100" style="width: 500px;" />
+							 
+						<p:outputLabel for="cidade" value="Cidade: " />
+						<p:inputText id="cidade" value="#{vendaMB.enderecoPOInsert.cidade}"
+							 maxlength="100" style="width: 500px;" />
+						
+						<p:outputLabel for="bairro" value="Bairro: " />
+						<p:inputText id="bairro" value="#{vendaMB.enderecoPOInsert.bairro}"
+							 maxlength="100" style="width: 500px;" />
+							 
+						<p:outputLabel for="rua" value="Rua: " />
+						<p:inputText id="rua" value="#{vendaMB.enderecoPOInsert.rua}"
+							 maxlength="100" style="width: 500px;" />
+							 
+						<p:outputLabel for="numero" value="Numero: " />
+						<p:inputText id="numero" value="#{vendaMB.enderecoPOInsert.numero}"
+							 maxlength="100" style="width: 500px;" />	 	 	 
+		                
+		            </h:panelGrid>
+		        </p:tab>
+		        
+		    	</p:accordionPanel>
+				
+				
+				<p:separator></p:separator>
+		
+				<center>
+					
+				
+				<p:commandButton value="Savar" ajax="true" icon="ui-icon-check"
+						 process="@this,:form:matchGrid333,:form:acc:endereco" 
+						 update=":form:cliDi,:form:messages,:form:growl,forneOne"
+						 actionListener="#{vendaMB.salvarCliente()}" 
+						oncomplete="PF('cliDi').hide()"
+						 />
+					
+					<p:commandButton value="Limpar" icon="ui-icon-close" actionListener="#{vendaMB.limparPopUp}"
+						update="matchGrid333,:form:acc:endereco" process="@this"
+						style="margin-right:20px;">
+						
+					</p:commandButton>
+				</center>
+		
+	</p:dialog>
+
+
+
+
+<p:dialog header="Produtos" widgetVar="prodDialog" modal="true" showEffect="fade" width="90%" hideEffect="fade" resizable="false">
+        	
+            <p:outputPanel id="display2ssss">
+				<p:dataTable id="dataTablexxx" var="pro" widgetVar="carsTable" value="#{vendaMB.produtosList}"
+						paginator="true" rows="5">
+						<f:facet name="header">
+		           		 <span style="font-size: 15px">Produtos</span>
+		        		</f:facet>
+		
+		
+					<p:column  headerText="Produto" style="width:70px;text-align: center" >
+						<p:graphicImage value="#{imageProdutoMB.image}" height="50" width="50">
+    						<f:param name="id" value="#{pro.produtoId}" />
+						</p:graphicImage>
+				   </p:column>		
+					
+					
+					<p:column headerText="Código Produto" filterBy="#{pro.codigoProduto}" style="text-align: center" filterMatchMode="contains">
+						<p:outputLabel value="#{pro.codigoProduto}"/>
+					</p:column>
+					
+					<p:column headerText="Nome" filterBy="#{pro.nome}" style="text-align: center" filterMatchMode="contains">
+						<p:outputLabel value="#{pro.nome}"/>
+					</p:column>
+					
+					<p:column headerText="Quant/Estq"  style="text-align: center" >
+						<p:outputLabel value="#{pro.quantidadeEstoque}"/>
+					</p:column>
+					
+					<p:column filterBy="#{pro.produzido.booleanValue()}" style="text-align: center" headerText="Produzido/Revenda"  filterMatchMode="equals">
+		            <f:facet name="filter">
+		                <p:selectOneButton onchange="PF('carsTable').filter()">
+		                    <f:converter converterId="javax.faces.Boolean" />
+		                    <f:selectItem itemLabel="Todos" itemValue="" />
+		                    <f:selectItem itemLabel="Prod." itemValue="true" />
+		                    <f:selectItem itemLabel="Revenda" itemValue="false" />
+		                </p:selectOneButton>
+		            </f:facet>
+		            <h:outputText value="#{pro.produzido ? 'Produzido': 'Revenda'}" />
+		        </p:column>
+					
+					
+					
+					<p:column headerText="Valor Venda" style="text-align: center" sortBy="#{pro.precoVenda}" >
+						<p:outputLabel value="#{pro.precoVenda}">
+							<f:convertNumber pattern="#,##0.00" />
+						</p:outputLabel>	
+					</p:column>
+					
+					<p:column  headerText="Quant." style="width: 10%;text-align: center;" >
+						<center>
+						 <p:spinner id="basic" value="#{pro.quantidade}" min="1" size="4" maxlength="4" max="1000"  disabled="#{pro.foiAdicionado}" >
+						 	<p:ajax process="@this" update="@this"></p:ajax>
+						 </p:spinner>
+						 </center>
+					</p:column>
+					
+					
+					<p:column  headerText="Adiconar" style="text-align: center;width: 10%;" >
+						<center>
+							<p:commandButton rendered="#{!pro.foiAdicionado}" icon="fa fa-plus-circle" process="@this" actionListener="#{vendaMB.adicionarProduto(pro)}"  update="form:matchGrid323,form:dataTablexxx,form:cadUsuer,form:growl">
+							</p:commandButton>
+							
+							<p:graphicImage rendered="#{pro.foiAdicionado}" url="../imagens/okLogo.jpg"  width="20px" height="20px" />
+						</center>
+					</p:column>
+					
+					
+					</p:dataTable>
+					
+			</p:outputPanel>
+ 			
+ 			<p:spacer height="20px"></p:spacer>
+ 			<p:separator></p:separator>
+ 			<div class="ui-fluid">
+				<p:commandButton value="Fechar" process="@this" style="height:50px" onclick="PF('prodDialog').hide()"/>
+			</div>
+ 			
+    </p:dialog>
+
+
+
+
+
+</h:form>
+
+
+<script type="text/javascript">
+PrimeFaces.locales['pt'] = {  
+                closeText: 'Fechar',  
+                prevText: 'Anterior',  
+                nextText: 'Próximo',  
+                currentText: 'Começo',  
+                monthNames: ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],  
+                monthNamesShort: ['Jan','Fev','Mar','Abr','Mai','Jun', 'Jul','Ago','Set','Out','Nov','Dez'],  
+                dayNames: ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'],  
+                dayNamesShort: ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'],  
+                dayNamesMin: ['D','S','T','Q','Q','S','S'],  
+                weekHeader: 'Semana',  
+                firstDay: 1,  
+                isRTL: false,  
+                showMonthAfterYear: false,  
+                yearSuffix: '',  
+                timeOnlyTitle: 'Só Horas',  
+                timeText: 'Tempo',  
+                hourText: 'Hora',  
+                minuteText: 'Minuto',  
+                secondText: 'Segundo',  
+                currentText: 'Data Atual',  
+                ampm: false,  
+                month: 'Mês',  
+                week: 'Semana',  
+                day: 'Dia',  
+                allDayText : 'Todo Dia'  
+            };
+</script>>
+
+</html>
