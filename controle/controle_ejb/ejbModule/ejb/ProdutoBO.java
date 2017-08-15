@@ -5,6 +5,7 @@ import java.util.List;
 import javax.ejb.Local;
 
 import model.ComponentePO;
+import model.ProdutoComponenteAbstract;
 import model.ProdutoPO;
 
 @Local
@@ -23,6 +24,8 @@ public interface ProdutoBO {
 	public abstract void salvarComponente(ComponentePO componentePO) throws Exception;
 		
 	public abstract String gerarCodigo();
+
+	public abstract List<? super ProdutoComponenteAbstract> findComponentesProdutosInternos();
 
 	
 }

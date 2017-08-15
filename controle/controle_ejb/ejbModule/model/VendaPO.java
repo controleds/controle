@@ -74,9 +74,23 @@ public class VendaPO implements Serializable {
 	
 	@Column(name="perc_desc",nullable=false)
 	private Double percDesc;
+
+	@Column(name="perc_vendedor",nullable=false)
+	private Double percVendedor;
+
 	
 	
 	
+	public Double getPercVendedor() {
+		return percVendedor;
+	}
+
+
+	public void setPercVendedor(Double percVendedor) {
+		this.percVendedor = percVendedor;
+	}
+
+
 	public Double getValorFinalVenda() {
 		return valorFinalVenda;
 	}

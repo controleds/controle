@@ -3,6 +3,7 @@ package model;
 import java.io.Serializable;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -22,11 +23,19 @@ import javax.persistence.Transient;
 @Table(name="produto")
 @NamedQueries(
 {@NamedQuery(name="ProdutoPO.FIND_BY_CODIGO",
-		     query="select p from ProdutoPO p where p.codigoProduto = :codigoProduto ")
+		     query="select p from ProdutoPO p where p.codigoProduto = :codigoProduto "),
+
+@NamedQuery(name="ProdutoPO.PRODUTOS_INTERNOS",
+    		query="select p from ProdutoPO p where p.interno = true "),
+
+@NamedQuery(name="ProdutoPO.PRODUTOS_A_VENDA",
+query="select p from ProdutoPO p where p.interno = false ")
 })
-public class ProdutoPO implements Serializable {
+public class ProdutoPO extends ProdutoComponenteAbstract implements Serializable  {
 
 	public static final String FIND_BY_CODIGO = "ProdutoPO.FIND_BY_CODIGO";
+	public static final String PRODUTOS_INTERNOS = "ProdutoPO.PRODUTOS_INTERNOS";
+	public static final String PRODUTOS_A_VENDA = "ProdutoPO.PRODUTOS_A_VENDA";
 	
 	private static final long serialVersionUID = -2569293721055195937L;
 
@@ -64,9 +73,16 @@ public class ProdutoPO implements Serializable {
 	@Column(name="produzido",nullable=false)
 	private Boolean produzido;
 	
+	@Column(name="interno",nullable=false)
+	private Boolean interno;
+	
 	@OneToMany(fetch=FetchType.EAGER)
 	@JoinColumn(name="produto_id")
 	private List<ProdutoComponentePO> produtoComponentePO;
+	
+	@OneToMany(fetch=FetchType.EAGER,cascade = CascadeType.ALL)
+	@JoinColumn(name="produto_id")
+	private List<ProdutoInternoPO> produtoInternoPO;
 
 	
 	@Transient
@@ -76,9 +92,33 @@ public class ProdutoPO implements Serializable {
 	private int quantidade = 1;
 	
 	
+	@Transient
+	private String observacao;
 	
 	
 	
+	
+	
+	public List<ProdutoInternoPO> getProdutoInternoPO() {
+		return produtoInternoPO;
+	}
+
+	public void setProdutoInternoPO(List<ProdutoInternoPO> produtoInternoPO) {
+		this.produtoInternoPO = produtoInternoPO;
+	}
+
+	public static String getProdutosInternos() {
+		return PRODUTOS_INTERNOS;
+	}
+
+	public String getObservacao() {
+		return observacao;
+	}
+
+	public void setObservacao(String observacao) {
+		this.observacao = observacao;
+	}
+
 	public Integer getQuantidadeEstoque() {
 		return quantidadeEstoque;
 	}
@@ -191,6 +231,14 @@ public class ProdutoPO implements Serializable {
 
 	public static String getFindByCodigo() {
 		return FIND_BY_CODIGO;
+	}
+
+	public Boolean getInterno() {
+		return interno;
+	}
+
+	public void setInterno(Boolean interno) {
+		this.interno = interno;
 	}
 
 	

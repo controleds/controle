@@ -1,6 +1,7 @@
 package model;
 
 
+import java.io.Serializable;
 import java.util.Arrays;
 
 import javax.persistence.Column;
@@ -16,7 +17,12 @@ import javax.persistence.Transient;
 
 @Entity
 @Table(name="componente")
-public class ComponentePO {
+public class ComponentePO extends ProdutoComponenteAbstract implements Serializable  {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -42478900618329398L;
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
@@ -42,7 +48,7 @@ public class ComponentePO {
 	
 	
 	@Column(name="quant_estoque")
-	private Double quantidadeEstoque;
+	private Integer quantidadeEstoque;
 	
 	@Transient
 	private boolean foiAdicionado;
@@ -116,11 +122,11 @@ public class ComponentePO {
 	
 	
 
-	public Double getQuantidadeEstoque() {
+	public Integer getQuantidadeEstoque() {
 		return quantidadeEstoque;
 	}
 
-	public void setQuantidadeEstoque(Double quantidadeEstoque) {
+	public void setQuantidadeEstoque(Integer quantidadeEstoque) {
 		this.quantidadeEstoque = quantidadeEstoque;
 	}
 
@@ -180,6 +186,14 @@ public class ComponentePO {
 		} else if (!valorUnitarioCompra.equals(other.valorUnitarioCompra))
 			return false;
 		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "ComponentePO [componenteId=" + componenteId + ", nome=" + nome + ", foto=" + Arrays.toString(foto)
+				+ ", valorUnitarioCompra=" + valorUnitarioCompra + ", fornecedor=" + fornecedor + ", observacao="
+				+ observacao + ", quantidadeEstoque=" + quantidadeEstoque + ", foiAdicionado=" + foiAdicionado
+				+ ", quantidade=" + quantidade + "]";
 	}
 	
 	
