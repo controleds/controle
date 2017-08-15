@@ -67,6 +67,7 @@ public class VendaMB extends AbstractMB implements Serializable {
 	private double valorDesc = 0;
 	private double valorTotalVenda =0;
 	private boolean habilitaDesc = false;
+	private double percentVendedor = 0;
 	
 	@ManagedProperty("#{loginMB}")
     private LoginMB sessionBean;
@@ -90,6 +91,7 @@ public class VendaMB extends AbstractMB implements Serializable {
 		troco = false;
 		habilitaVenda = false;
 		habilitaDesc = false;
+		percentVendedor = 0;
 		this.carregaClientes();
 		this.carregaVendedores();
 	}
@@ -161,17 +163,13 @@ public class VendaMB extends AbstractMB implements Serializable {
 	}
 	
 
-	
-	
-	public List<SelectItem> getVendedoresSelectItems() {
-		return vendedoresSelectItems;
+	public void vendedorSelectPercent(){
+		if(this.vendedorIdSelect != null && !this.vendedorIdSelect.isEmpty()){
+			VendedorPO  vendedorPO = vendedorBO.find(new Long(this.vendedorIdSelect));
+			vendaPO.setPercVendedor(vendedorPO.getPercentualVenda());
+		}
 	}
-
-
-	public void setVendedoresSelectItems(List<SelectItem> vendedoresSelectItems) {
-		this.vendedoresSelectItems = vendedoresSelectItems;
-	}
-
+	
 
 	public void adicionarProduto(ProdutoPO produtoPO){
 		produtoPO.setFoiAdicionado(true);
@@ -273,6 +271,7 @@ public class VendaMB extends AbstractMB implements Serializable {
 
 	
 	private void preSave() {
+		vendaPO.setPercVendedor(vendaPO.getPercDesc() != null ? vendaPO.getPercDesc() : 0d);  
 		vendaPO.setValorTotal(this.calculaTotalVenda());
 		vendaPO.setValorDesc(this.valorDesc);
 		vendaPO.setPercDesc(this.percentDecs);
@@ -294,7 +293,29 @@ public class VendaMB extends AbstractMB implements Serializable {
 		this.valorTotalVenda =  total - vl;
 	}
 	
+
 	
+	
+	
+	public double getPercentVendedor() {
+		return percentVendedor;
+	}
+
+
+	public void setPercentVendedor(double percentVendedor) {
+		this.percentVendedor = percentVendedor;
+	}
+
+
+	public List<SelectItem> getVendedoresSelectItems() {
+		return vendedoresSelectItems;
+	}
+
+
+	public void setVendedoresSelectItems(List<SelectItem> vendedoresSelectItems) {
+		this.vendedoresSelectItems = vendedoresSelectItems;
+	}
+
 	
 	
 	public boolean isHabilitaDesc() {

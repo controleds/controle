@@ -1,0 +1,80 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+
+
+<f:view contentType="text/html">
+	<h:head>
+		<f:facet name="first">
+			<meta http-equiv="X-UA-Compatible" content="EmulateIE8" />
+			<meta content='text/html; charset=UTF-8' http-equiv="Content-Type" />
+		</f:facet>
+		<ui:include src="../css/all_css.css" />
+	</h:head>
+</f:view>
+
+
+<h:form id="form">
+	
+	<p:layout resizerTip="Resize Me" togglerTipClosed="Open Me"
+		togglerTipOpen="Close Me">
+	
+	<p:growl id="growl" showDetail="false" life="3000" closable="true" />
+	<p:messages id="messages" showDetail="false" closable="true" />
+	<ui:include src="../pages/leftPage.xhtml" />
+	<ui:include src="../pages/topPage.xhtml" />
+	
+	<p:layoutUnit  position="center">
+
+				          			
+  				
+				<center>
+				<p:panel id="cadUsuer" style="width: 95%;" >
+				<f:facet name="header">
+		           	<span style="font-size: 15px">Cadastro Clientes</span>
+		        </f:facet>
+				
+				
+				<h:panelGrid columns="2" id="matchGrid" cellpadding="5">
+		
+						</h:panelGrid>
+				
+				
+				
+						
+				
+				<p:separator></p:separator>
+		
+				<center>
+					<p:commandButton value="Savar" ajax="false" icon="ui-icon-check"
+						validateClient="true" update=":form:matchGrid" process="@all"
+						type="submit" actionListener="#{orcamentosMB.teste()}" />
+					<p:commandButton value="Limpar" icon="ui-icon-close" actionListener="#{clientesFornecedoresMB.ini()}"
+						update="@form" process="@this"
+						style="margin-right:20px;">
+						<p:resetInput target=":form:matchGrid,:form:messages,:form:growl" />
+					</p:commandButton>
+				</center>
+		
+		
+			</p:panel>
+		
+			<p:spacer height="50" />
+		
+			<p:panel style="width: 95%;">
+		
+			</p:panel>
+					
+			</center>
+		
+	</p:layoutUnit>
+	</p:layout>	
+	
+	
+</h:form>
+
+</html>

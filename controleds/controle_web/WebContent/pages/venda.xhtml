@@ -51,7 +51,7 @@
 				          			
   				
 				<center>
-				<p:panel id="cadUsuer" style="width: 95%;" >
+				<p:panel id="cadUsuer" style="width: 98%;" >
 				<f:facet name="header">
 		           	<span style="font-size: 15px">Vendas</span>
 		        </f:facet>
@@ -72,12 +72,20 @@
 					</h:panelGroup>
 					
 					<p:outputLabel  value="Vendedor:" for="forneOne1"  />
+					<h:panelGroup>
 					<p:selectOneMenu id="forneOne1" effect="fade" filter="true" required="true" filterMatchMode="startsWith" value="#{vendaMB.vendedorIdSelect}" style="width: 500px;vertical-align:middle"> 
 			            <f:selectItem itemLabel="Select One" itemValue="" />
 			            <f:selectItems value="#{vendaMB.vendedoresSelectItems}" />
-			            
+			            <p:ajax event="change" listener="#{vendaMB.vendedorSelectPercent}" process="@this" update="matchGrid" />
 			        </p:selectOneMenu>
+					</h:panelGroup>
 					
+					<p:outputLabel value="Percentual Vendedor"/>
+					<h:panelGroup>
+					<p:inputNumber id="nmb1" value="#{vendaMB.vendaPO.percVendedor}" style="width:80px;" symbol=" %" maxValue="100" minValue="0" size="10" >
+			        </p:inputNumber>
+			        <p:slider for="nmb1" style="width:80px;" />
+					</h:panelGroup>
 					
 					<p:outputLabel for="popup" value="Data Venda:" />
         			<p:calendar id="popup" value="#{vendaMB.vendaPO.dataVenda}" required="true"  requiredMessage="O Campo Data Venda é Obrigatório" locale="pt" pattern="dd/MM/yyyy" />
@@ -104,15 +112,10 @@
 						</p:graphicImage>
 				   </p:column>		
 					
-					
-					<p:column headerText="Código Produto" filterBy="#{pro.produtoPO.codigoProduto}" style="text-align: center" filterMatchMode="contains">
-						<p:outputLabel value="#{pro.produtoPO.codigoProduto}"/>
-					</p:column>
-					
+										
 					<p:column headerText="Nome" filterBy="#{pro.produtoPO.nome}" style="text-align: center" filterMatchMode="contains">
 						<p:outputLabel value="#{pro.produtoPO.nome}"/>
 					</p:column>
-					
 					
 					
 					<p:column headerText="Valor Uni." style="text-align: center" sortBy="#{pro.produtoPO.precoVenda}" >
@@ -127,7 +130,6 @@
 						 	<p:outputLabel value="#{pro.quantidade}"/>
 						</center>
 					</p:column>
-					
 					
 					
 					
@@ -390,11 +392,11 @@
 				   </p:column>		
 					
 					
-					<p:column headerText="Código Produto" filterBy="#{pro.codigoProduto}" style="text-align: center" filterMatchMode="contains">
+					<p:column headerText="Código Produto" filterBy="#{pro.codigoProduto}" filterStyleClass="cssClass" style="text-align: center" filterMatchMode="contains">
 						<p:outputLabel value="#{pro.codigoProduto}"/>
 					</p:column>
 					
-					<p:column headerText="Nome" filterBy="#{pro.nome}" style="text-align: center" filterMatchMode="contains">
+					<p:column headerText="Nome" filterBy="#{pro.nome}" filterStyleClass="cssClass" style="text-align: center" filterMatchMode="contains">
 						<p:outputLabel value="#{pro.nome}"/>
 					</p:column>
 					

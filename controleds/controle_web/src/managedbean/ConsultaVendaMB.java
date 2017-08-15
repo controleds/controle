@@ -121,8 +121,8 @@ public class ConsultaVendaMB extends AbstractMB implements Serializable {
 	
 	public double gastosComissao(VendaPO vendaPO){
 		double vr = 0;
-		if (vendaPO != null && vendaPO.getVendedorPO() != null && vendaPO.getVendedorPO().getPercentualVenda() != null){
-			vr = vendaPO.getValorFinalVenda() * vendaPO.getVendedorPO().getPercentualVenda() / 100;  
+		if (vendaPO != null &&  vendaPO.getPercVendedor() != null){
+			vr = vendaPO.getValorFinalVenda() * vendaPO.getPercVendedor() / 100;  
 		}
 		return vr;
 	}

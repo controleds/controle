@@ -57,9 +57,15 @@ jQuery(document).ready(function(){
 				<h:panelGrid columns="2" id="matchGrid" cellpadding="5">
 		
 					
-					<h:outputText value="Produziodo: " />
+					<h:outputText value="Produzido: " />
 			        <p:selectBooleanButton id="value2" value="#{produtoMB.produzido}"  onLabel="Sim" offLabel="Não" onIcon="ui-icon-check" offIcon="ui-icon-close" style="width:60px">
 			            <p:ajax update="@form" process="@this" listener="#{produtoMB.ini()}"/>
+			        </p:selectBooleanButton>
+			        
+			        
+			        <h:outputText value="Uso Interno: " rendered="#{produtoMB.produzido}" />
+			        <p:selectBooleanButton id="value3" value="#{produtoMB.interno}" rendered="#{produtoMB.produzido}"  onLabel="Sim" offLabel="Não" onIcon="ui-icon-check" offIcon="ui-icon-close" style="width:60px">
+			            <p:ajax update="@form" process="@this" />
 			        </p:selectBooleanButton>
 					
 					<p:outputLabel for="nome" value="Nome: " />
@@ -75,12 +81,12 @@ jQuery(document).ready(function(){
 						<p:inputNumber required="true" id="input2xx"  decimalPlaces="0"  minValue="0" value="#{produtoMB.produtoPO.quantidadeEstoque}">  
                 	</p:inputNumber>
 					
-					<p:outputLabel  for="input11" value="Valor venda:" rendered="#{produtoMB.produzido}" />
-						<p:inputNumber rendered="#{produtoMB.produzido}"  required="true" id="input11" decimalSeparator="," thousandSeparator="." value="#{produtoMB.produtoPO.precoVenda}">  
+					<p:outputLabel  for="input11" value="Valor venda:" rendered="#{produtoMB.produzido and !produtoMB.interno}" />
+						<p:inputNumber rendered="#{produtoMB.produzido and !produtoMB.interno}"  required="true" id="input11" decimalSeparator="," thousandSeparator="." value="#{produtoMB.produtoPO.precoVenda}">  
                 		<p:ajax update=":form:matchGridxxcc" process="@this,input22" listener="#{produtoMB.calculaLucroProd()}" /> 
                 	</p:inputNumber>
 					
-					<h:outputLabel value="Fornecedor:"  rendered="#{!produtoMB.produzido}" />
+					<h:outputLabel value="Fornecedor:"  rendered="#{!produtoMB.produzido }" />
 					 <p:selectOneMenu  rendered="#{!produtoMB.produzido}" id="forneOne" effect="fade" filter="true" filterMatchMode="startsWith" value="#{produtoMB.fornecedorselectItem}" style="width: 500px;vertical-align:middle"> 
 			            <f:selectItem itemLabel="Select One" itemValue="" />
 			            <f:selectItems value="#{produtoMB.fornecedoresSelectItems}" />
@@ -117,25 +123,33 @@ jQuery(document).ready(function(){
 					<p:commandButton value="Adicionar Componente" onclick="PF('prodDialog').show()" style="width:150px;height:150px" />
 					
 					
-					<p:dataTable id="dataTable" var="com" value="#{produtoMB.componentesAdicionadosList}"
+					<p:dataTable id="dataTable" var="com" value="#{produtoMB.componentesAdicionadosList}" 
 						paginator="true" rows="5">
 						<f:facet name="header">
 		           		 <span style="font-size: 15px">Componentes</span>
 		        		</f:facet>
-		
-		
-					<p:column  headerText="Componente" style="width:70px;text-align: center" >
-						<p:graphicImage value="#{imageComponenteMB.image}" height="50" width="50">
+						
+					<p:column  headerText="Componente" style="text-align: center" >
+						<p:graphicImage value="#{imageComponenteMB.image}" height="50" width="50" cache="false" rendered="#{com['class'].simpleName eq 'ComponentePO'}">
     						<f:param name="id" value="#{com.componenteId}" />
 						</p:graphicImage>
-				   </p:column>		
+						
+						<p:graphicImage value="#{imageProdutoMB.image}" height="50" width="50" cache="false" rendered="#{com['class'].simpleName eq 'ProdutoPO'}">
+    						<f:param name="id" value="#{com.produtoId}" />
+						</p:graphicImage>
 					
-					<p:column headerText="Nome" filterBy="#{usu.celular}" style="text-align: center" filterMatchMode="contains">
+					</p:column>
+					
+					<p:column headerText="Nome" filterBy="#{com.nome}" style="text-align: center" filterMatchMode="contains">
 						<p:outputLabel value="#{com.nome}"/>
 					</p:column>
 					
 					<p:column headerText="Valor Unitario" style="text-align: center" sortBy="#{com.valorUnitarioCompra}" >
-						<p:outputLabel value="#{com.valorUnitarioCompra}">
+						<p:outputLabel value="#{com.valorUnitarioCompra}" rendered="#{com['class'].simpleName eq 'ComponentePO'}">
+							<f:convertNumber pattern="#,##0.00" />
+						</p:outputLabel>
+						
+						<p:outputLabel value="#{com.precoCompra}" rendered="#{com['class'].simpleName eq 'ProdutoPO'}">
 							<f:convertNumber pattern="#,##0.00" />
 						</p:outputLabel>	
 					</p:column>
@@ -146,14 +160,11 @@ jQuery(document).ready(function(){
 						</center>
 					</p:column>
 					
-					<p:column style="width:70px;text-align: center" headerText="Fornecedor">
-						<p:outputLabel value="#{com.fornecedor.nome}"/>
-					</p:column>
-					
+										
 					
 					<p:column  headerText="Remover" style="width: 10%;" >
 						<center>
-							<p:commandButton icon="fa fa-close" process="@this" actionListener="#{produtoMB.removeComponente(com)}" update=":form:matchGrid323,:form:dataTablexxx,:form:matchGridxxcc" >
+							<p:commandButton icon="fa fa-close" process="@this,:form:dataTablexxx" actionListener="#{produtoMB.removeComponente(com)}" update=":form:matchGrid323,:form:dataTablexxx,:form:matchGridxxcc" >
 							</p:commandButton>
 						</center>
 					</p:column>
@@ -169,8 +180,8 @@ jQuery(document).ready(function(){
 						<p:inputNumber rendered="#{produtoMB.produzido}" readonly="true"   id="input22" decimalSeparator="," thousandSeparator="." value="#{produtoMB.produtoPO.precoCompra}">  
                 	</p:inputNumber> 
 				
-					<p:outputLabel  for="input33" value="Lucro Estimado:"  rendered="#{produtoMB.produzido}" />
-						<p:inputNumber  rendered="#{produtoMB.produzido}" readonly="true" id="input33" decimalSeparator="," thousandSeparator="." value="#{produtoMB.produtoPO.lucro}">  
+					<p:outputLabel  for="input33" value="Lucro Estimado:"  rendered="#{produtoMB.produzido and !produtoMB.interno}" />
+						<p:inputNumber  rendered="#{produtoMB.produzido and !produtoMB.interno}" readonly="true" id="input33" decimalSeparator="," thousandSeparator="." value="#{produtoMB.produtoPO.lucro}">  
                 	</p:inputNumber>
 				   
 					
@@ -214,11 +225,11 @@ jQuery(document).ready(function(){
 				   </p:column>		
 					
 					
-					<p:column headerText="Código Produto" filterBy="#{pro.codigoProduto}" style="text-align: center" filterMatchMode="contains">
+					<p:column headerText="Código Produto" filterBy="#{pro.codigoProduto}" filterStyleClass="cssClass" style="text-align: center" filterMatchMode="contains">
 						<p:outputLabel value="#{pro.codigoProduto}"/>
 					</p:column>
 					
-					<p:column headerText="Nome" filterBy="#{pro.nome}" style="text-align: center" filterMatchMode="contains">
+					<p:column headerText="Nome" filterBy="#{pro.nome}" style="text-align: center" filterStyleClass="cssClass" filterMatchMode="contains">
 						<p:outputLabel value="#{pro.nome}"/>
 					</p:column>
 					
@@ -281,48 +292,71 @@ jQuery(document).ready(function(){
 	
 	
 	
-	<p:dialog header="Produtos" widgetVar="prodDialog" modal="true" showEffect="fade" width="900px" hideEffect="fade" resizable="false">
+	<p:dialog header="Componentes" widgetVar="prodDialog" modal="true" showEffect="fade" width="900px" hideEffect="fade" resizable="false">
         	
             <p:outputPanel id="display2ssss">
-				<p:dataTable id="dataTablexxx" var="com" value="#{produtoMB.componentePOsList}"
+				<p:dataTable id="dataTablexxx" var="com" value="#{produtoMB.produtosComponentesList}" 
 						paginator="true" rows="5">
 						<f:facet name="header">
 		           		 <span style="font-size: 15px">Componentes</span>
 		        		</f:facet>
 		
 		
-					<p:column  headerText="Componente" style="width:70px;text-align: center" >
-						<p:graphicImage value="#{imageComponenteMB.image}" height="50" width="50" cache="false">
+					<p:column  headerText="Componente" style="text-align: center" >
+						
+						<p:graphicImage value="#{imageComponenteMB.image}" height="50" width="50" cache="false" rendered="#{com['class'].simpleName eq 'ComponentePO'}">
     						<f:param name="id" value="#{com.componenteId}" />
 						</p:graphicImage>
+						
+						<p:graphicImage value="#{imageProdutoMB.image}" height="50" width="50" cache="false" rendered="#{com['class'].simpleName eq 'ProdutoPO'}">
+    						<f:param name="id" value="#{com.produtoId}" />
+						</p:graphicImage>
+						
 				   </p:column>		
+						
 					
-					<p:column headerText="Nome" filterBy="#{usu.celular}" style="text-align: center" filterMatchMode="contains">
-						<p:outputLabel value="#{com.nome}"/>
+					
+					<p:column headerText="Nome" filterBy="#{com.nome}"  style="width: 30%;text-align: center" filterMatchMode="contains">
+						<p:outputLabel value="#{com.nome}" />
 					</p:column>
+					
+					
+					<p:column headerText="Estoque"  style="text-align: center">
+						<p:outputLabel value="#{com.quantidadeEstoque}"/>
+					</p:column>
+					
+					
 					
 					<p:column headerText="Valor Unitario" style="text-align: center" sortBy="#{com.valorUnitarioCompra}" >
-						<p:outputLabel value="#{com.valorUnitarioCompra}">
+						<p:outputLabel value="#{com.valorUnitarioCompra}" rendered="#{com['class'].simpleName eq 'ComponentePO'}">
 							<f:convertNumber pattern="#,##0.00" />
-						</p:outputLabel>	
+						</p:outputLabel>
+						
+						<p:outputLabel value="#{com.precoCompra}" rendered="#{com['class'].simpleName eq 'ProdutoPO'}">
+							<f:convertNumber pattern="#,##0.00" />
+						</p:outputLabel>
+							
 					</p:column>
+					
 					
 					<p:column headerText="Observação" style="text-align: center" >
 						<p:outputLabel value="#{com.observacao}"/>
 					</p:column>
 					
+					
 					<p:column  headerText="Quantidate"  >
 						<center>
-						 <p:spinner id="basic" value="#{com.quantidade}" min="1" disabled="#{com.foiAdicionado}" >
+						 <p:spinner id="basic" value="#{com.quantidade}" min="1" size="5"  disabled="#{com.foiAdicionado}" >
 						 	<p:ajax process="@this" update="@this"></p:ajax>
 						 </p:spinner>
 						</center>
 					</p:column>
 					
 					
-					<p:column  headerText="Adiconar" style="width: 10%;" >
+					
+					<p:column  headerText="Adiconar" >
 						<center>
-							<p:commandButton rendered="#{!com.foiAdicionado}" icon="fa fa-plus-circle" process="@this" actionListener="#{produtoMB.adicionarComponente(com)}"  update="form:matchGrid323,form:dataTablexxx,:form:matchGridxxcc">
+							<p:commandButton rendered="#{!com.foiAdicionado}" icon="fa fa-plus-circle" process="dataTablexxx,@this" actionListener="#{produtoMB.adicionarComponente(com)}"  update="form:matchGrid323,form:dataTablexxx,:form:matchGridxxcc">
 							</p:commandButton>
 							
 							<p:graphicImage rendered="#{com.foiAdicionado}" url="../imagens/okLogo.jpg"  width="20px" height="20px" />

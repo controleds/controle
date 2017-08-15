@@ -91,7 +91,7 @@
 				<center>
 							
 					<p:commandButton value="Savar" ajax="false" icon="ui-icon-check"
-						update=":form:matchGrid" process="@this"
+						update=":form" process=":form" 
 						type="submit" actionListener="#{componenteMB.salvarComponente()}" />
 					
 					<p:commandButton value="Limpar" icon="ui-icon-close" actionListener="#{componenteMB.ini()}"
@@ -107,22 +107,24 @@
 			<p:spacer height="50" />
 				
 				
-				<p:panel style="width: 95%;">
+				<p:panel style="width: 95%">
+				
 		
-					<p:dataTable id="dataTable222" var="com" value="#{componenteMB.componentePOsList}"
+					<p:dataTable id="tableXXX" var="com" widgetVar="carsTable" value="#{componenteMB.componentePOsList}"   
 						paginator="true" rows="5">
+						
 						<f:facet name="header">
 		           		 <span style="font-size: 15px">Componentes</span>
 		        		</f:facet>
-		
-		
-					<p:column  headerText="Componente" style="width:70px;text-align: center" >
+		        		
+		        		<p:column  headerText="Componente" style="width:70px;text-align: center" >
 						<p:graphicImage cache="false" value="#{imageComponenteMB.image}" height="50" width="50">
     						<f:param name="id" value="#{com.componenteId}" />
 						</p:graphicImage>
-				   </p:column>		
-					
-					<p:column headerText="Nome" filterBy="#{com.nome}" style="text-align: center" filterMatchMode="contains">
+				   </p:column>
+		
+		
+					<p:column headerText="Nome" filterBy="#{com.nome}" style="text-align: center" filterable="true" filterMatchMode="contains">
 						<p:outputLabel value="#{com.nome}"/>
 					</p:column>
 					
@@ -151,8 +153,10 @@
 						<f:facet name="header">
 							<p:outputLabel value="Editar" />
 						</f:facet>
-						<p:commandButton ajax="true" actionListener="#{componenteMB.selectComponente(com)}"
+						<p:commandButton ajax="true" actionListener="#{componenteMB.selectComponente}"
 							update="@form" process="@this"  icon="ui-icon-pencil" title="Editar">
+							<f:setPropertyActionListener value="#{com}" target="#{componenteMB.componentePO}" />
+							
 						</p:commandButton>
 					</p:column>
 					
@@ -351,8 +355,5 @@
 	
 	
 </h:form>
-
-
-
 
 </html>

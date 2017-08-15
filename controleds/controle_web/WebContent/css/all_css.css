@@ -9,6 +9,10 @@
              border: none;
 }
 
+.cssClass{width: 70px !important}
+
+.cssClass40{width: 40px !important}
+
 .bLeft{
 	border: 2px;
 }

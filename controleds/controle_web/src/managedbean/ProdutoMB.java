@@ -19,7 +19,9 @@ import ejb.ProdutoBO;
 import model.ClienteFornecedorPO;
 import model.ComponentePO;
 import model.EnderecoPO;
+import model.ProdutoComponenteAbstract;
 import model.ProdutoComponentePO;
+import model.ProdutoInternoPO;
 import model.ProdutoPO;
 import type.ClienteFornecedorEnum;
 import util.cep.ViaCEP;
@@ -42,8 +44,13 @@ public class ProdutoMB extends AbstractMB implements Serializable {
 	
 	private ProdutoPO produtoPO = new ProdutoPO();
 	
+	
+	private List<? super ProdutoComponenteAbstract> produtosComponentesList = new ArrayList<>();
+	private List<? super ProdutoComponenteAbstract> componentesAdicionadosList = new ArrayList<>();
+	
+	
 	private List<ComponentePO> componentePOsList = new ArrayList<ComponentePO>();
-	private List<ComponentePO> componentesAdicionadosList = new ArrayList<ComponentePO>();
+	
 	private List<ClienteFornecedorPO> fornecedorPOsList  = new ArrayList<ClienteFornecedorPO>();
 	private List<SelectItem> fornecedoresSelectItems = new ArrayList<>();
 	private String fornecedorselectItem = "";
@@ -54,11 +61,12 @@ public class ProdutoMB extends AbstractMB implements Serializable {
 	private ClienteFornecedorPO viewClienteFornecedorPO =  new  ClienteFornecedorPO();
 	private ClienteFornecedorPO fornecedorPO = new ClienteFornecedorPO();
 	private boolean produzido = false;
+	private boolean interno = false;
 	
 	@PostConstruct
 	public void ini(){
 		produtoPOsList = produtoBO.findAll();
-		componentesAdicionadosList = new ArrayList<ComponentePO>();
+		
 		produtoPO =  new  ProdutoPO();
 		componentePOsList = produtoBO.findComponentes();
 		fornecedorPO = new ClienteFornecedorPO();
@@ -66,9 +74,16 @@ public class ProdutoMB extends AbstractMB implements Serializable {
 		fornecedorselectItem = "";
 		viewEnderecoPO = new EnderecoPO();
 		viewClienteFornecedorPO =  new  ClienteFornecedorPO();
+		interno = false;
+		
+		produtosComponentesList = produtoBO.findComponentesProdutosInternos();
+		componentesAdicionadosList = new ArrayList<>();
 	}
 	
 	
+	
+
+
 	public void handleFileUpload(FileUploadEvent event) {
 		produtoPO.setFoto(event.getFile().getContents());
 		FacesMessage message = new FacesMessage("Succesful", event.getFile().getFileName() + " is uploaded.");
@@ -90,6 +105,7 @@ public class ProdutoMB extends AbstractMB implements Serializable {
 
 	private void preSave() {
 		produtoPO.setProduzido(this.produzido);
+		produtoPO.setInterno(this.interno);
 		if (fornecedorselectItem != null && !fornecedorselectItem.equals("")){
 			fornecedorPO = fornecedorBO.find(new Long(fornecedorselectItem));
 		} else {
@@ -101,14 +117,31 @@ public class ProdutoMB extends AbstractMB implements Serializable {
 			produtoPO.setProdutoComponentePO(parseComp(componentesAdicionadosList));
 	}
 	
-	private List<ProdutoComponentePO> parseComp(List<ComponentePO> componentesAdicionadosList2) {
+	private List<ProdutoComponentePO> parseComp(List<? super ProdutoComponenteAbstract> componentesAdicionadosList2) {
 		List<ProdutoComponentePO> list = new ArrayList<>();
-		for (ComponentePO componentePO : componentesAdicionadosList2) {
-			ProdutoComponentePO produtoComponentePO = new ProdutoComponentePO();
-			produtoComponentePO.setProdutoPO(produtoPO);
-			produtoComponentePO.setComponentePO(componentePO);
-			produtoComponentePO.setQuantidade(componentePO.getQuantidade());
-			list.add(produtoComponentePO);
+		
+		for (Object o : componentesAdicionadosList2) {
+			if (o instanceof ComponentePO){
+				ProdutoComponentePO produtoComponentePO = new ProdutoComponentePO();
+				produtoComponentePO.setProdutoPO(produtoPO);
+				produtoComponentePO.setComponentePO((ComponentePO)o);
+				produtoComponentePO.setQuantidade(((ComponentePO)o).getQuantidade());
+				list.add(produtoComponentePO);
+			
+			} else if (o instanceof ProdutoPO){
+				
+				if (this.produtoPO.getProdutoInternoPO() == null ||
+						this.produtoPO.getProdutoInternoPO().isEmpty())
+					this.produtoPO.setProdutoInternoPO(new ArrayList<>()); 
+					
+				ProdutoInternoPO produtoInternoPO = new ProdutoInternoPO();
+				produtoInternoPO.setProdutoInterno((ProdutoPO)o);
+				produtoInternoPO.setQuantidade(((ProdutoPO)o).getQuantidade());
+				produtoInternoPO.getProdutoInterno().setQuantidade(produtoInternoPO.getQuantidade());
+				produtoInternoPO.setProdutoPO(produtoPO);
+				this.produtoPO.getProdutoInternoPO().add(produtoInternoPO);
+				
+			}
 		}
 		return list;
 	}
@@ -122,6 +155,7 @@ public class ProdutoMB extends AbstractMB implements Serializable {
 	public void selectProduto(ProdutoPO produtoPO){
 		this.produtoPO = produtoPO;
 		this.produzido = produtoPO.getProduzido();
+		this.interno = produtoPO.getInterno();
 		if(produtoPO.getProduzido()){
 			this.carregaProduzido();
 		} else {
@@ -140,24 +174,49 @@ public class ProdutoMB extends AbstractMB implements Serializable {
 
 
 	private void carregaProduzido() {
+		this.componentesAdicionadosList = new ArrayList<>();
 		if (this.produtoPO.getProdutoComponentePO() != null && 
 			!this.produtoPO.getProdutoComponentePO().isEmpty()){
-			this.componentesAdicionadosList = new ArrayList<>();
 			for (ProdutoComponentePO componentePO : this.produtoPO.getProdutoComponentePO()) {
 				componentePO.getComponentePO().setQuantidade(componentePO.getQuantidade());
 				componentesAdicionadosList.add(componentePO.getComponentePO());
 			}
 		}
+		
+		if (this.produtoPO.getProdutoInternoPO() != null && 
+				!this.produtoPO.getProdutoInternoPO().isEmpty()){
+				for (ProdutoInternoPO pPO : this.produtoPO.getProdutoInternoPO()) {
+					pPO.getProdutoInterno().setQuantidade(pPO.getQuantidade());
+					componentesAdicionadosList.add(pPO.getProdutoInterno());
+				}
+			}
+		
+		
 		carregaProduzidoPopUp();
 	}
 
 
 	private void carregaProduzidoPopUp() {
-		for (ComponentePO com1 : componentesAdicionadosList) {
-			for (ComponentePO com2 : componentePOsList) {
-				if (com1.getComponenteId().equals(com2.getComponenteId())) {
-					com2.setQuantidade(com1.getQuantidade());
-					com2.setFoiAdicionado(true);
+		for (Object o : componentesAdicionadosList) {
+			if (o instanceof ComponentePO) {
+				ComponentePO com1 = (ComponentePO) o;
+				for (Object com2 : produtosComponentesList) {
+					if (com2 instanceof ComponentePO){
+						if (com1.getComponenteId().equals(((ComponentePO) com2).getComponenteId())) {
+							((ComponentePO) com2).setQuantidade(com1.getQuantidade());
+							((ComponentePO) com2).setFoiAdicionado(true);
+						}
+					}
+				}
+			} else if (o instanceof ProdutoPO){
+				ProdutoPO com1 = (ProdutoPO) o;
+				for (Object com2 : produtosComponentesList) {
+					if (com2 instanceof ProdutoPO){
+						if (com1.getProdutoId().equals(((ProdutoPO) com2).getProdutoId())) {
+							((ProdutoPO) com2).setQuantidade(com1.getQuantidade());
+							((ProdutoPO) com2).setFoiAdicionado(true);
+						}
+					}
 				}
 			}
 		}
@@ -195,39 +254,37 @@ public class ProdutoMB extends AbstractMB implements Serializable {
 		}
 	}
 	
-	
-	
-	
-	public boolean isProduzido() {
-		return produzido;
-	}
-
-
-	public void setProduzido(boolean produzido) {
-		this.produzido = produzido;
-	}
-
-
-	public void limparPopUp (){
-		this.clienteFornecedorPO = new ClienteFornecedorPO();
-		this.enderecoPO = new EnderecoPO();
-	}
-	
-
-	
-	public void adicionarComponente(ComponentePO componentePO){
-		componentePO.setFoiAdicionado(true);
-		this.componentesAdicionadosList.add(componentePO);
+	public void adicionarComponente(ProdutoComponenteAbstract prod){
+		if (prod instanceof ComponentePO){
+			ComponentePO componentePO = (ComponentePO)prod;
+			componentePO.setFoiAdicionado(true);
+			this.componentesAdicionadosList.add(componentePO);
+		} else if (prod instanceof ProdutoPO){
+			ProdutoPO componentePO = (ProdutoPO)prod;
+			componentePO.setFoiAdicionado(true);
+			this.componentesAdicionadosList.add(componentePO);
+		}
 		calculaLucroProd();
 	}
 	
 	
-	public void removeComponente(ComponentePO componentePO){
+	public void removeComponente(ProdutoComponenteAbstract componentePO){
 		this.componentesAdicionadosList.remove(componentePO);
-		for (ComponentePO componente : componentePOsList) {
-			if (componente.getComponenteId().equals(componentePO.getComponenteId())){
-				componente.setQuantidade(1);
-				componente.setFoiAdicionado(false);
+		if (componentePO instanceof ComponentePO){
+			for (Object componente : produtosComponentesList) {
+				if (componente instanceof ComponentePO && 
+						((ComponentePO) componente).getComponenteId().equals(((ComponentePO) componentePO).getComponenteId())){
+					((ComponentePO) componente).setQuantidade(1);
+					((ComponentePO) componente).setFoiAdicionado(false);
+				}
+			}
+		} else if (componentePO instanceof ProdutoPO){
+			for (Object componente : produtosComponentesList) {
+				if (componente instanceof ComponentePO && 
+						((ProdutoPO) componente).getProdutoId().equals(((ProdutoPO) componentePO).getProdutoId())){
+					((ProdutoPO) componente).setQuantidade(1);
+					((ProdutoPO) componente).setFoiAdicionado(false);
+				}
 			}
 		}
 		calculaLucroProd();
@@ -246,8 +303,11 @@ public class ProdutoMB extends AbstractMB implements Serializable {
 	private double valorComponentes() {
 		double valorTotal = 0;
 		if (componentesAdicionadosList != null && !componentesAdicionadosList.isEmpty()){
-			for (ComponentePO componente : componentesAdicionadosList) {
-				valorTotal = valorTotal + (componente.getQuantidade() * componente.getValorUnitarioCompra());
+			for (Object componente : componentesAdicionadosList) {
+				if (componente instanceof ComponentePO)
+				   valorTotal = valorTotal + (((ComponentePO) componente).getQuantidade() * ((ComponentePO) componente).getValorUnitarioCompra());
+				else if (componente instanceof ProdutoPO)
+					valorTotal = valorTotal + (((ProdutoPO) componente).getQuantidade() * ((ProdutoPO) componente).getPrecoCompra());
 			}
 		}
 		return valorTotal;
@@ -259,6 +319,21 @@ public class ProdutoMB extends AbstractMB implements Serializable {
 		this.produtoPO.setCodigoProduto(codigo);
 	}
 	
+	
+	public boolean isProduzido() {
+		return produzido;
+	}
+
+
+	public void setProduzido(boolean produzido) {
+		this.produzido = produzido;
+	}
+
+
+	public void limparPopUp (){
+		this.clienteFornecedorPO = new ClienteFornecedorPO();
+		this.enderecoPO = new EnderecoPO();
+	}
 	
 	public ProdutoBO getProdutoBO() {
 		return produtoBO;
@@ -273,7 +348,15 @@ public class ProdutoMB extends AbstractMB implements Serializable {
 
 
 
+	public List<? super ProdutoComponenteAbstract> getProdutosComponentesList() {
+		return produtosComponentesList;
+	}
 
+
+	public void setProdutosComponentesList(List<? super ProdutoComponenteAbstract> produtosComponentesList) {
+		this.produtosComponentesList = produtosComponentesList;
+	}
+	
 	public ProdutoPO getProdutoPO() {
 		return produtoPO;
 	}
@@ -410,12 +493,12 @@ public class ProdutoMB extends AbstractMB implements Serializable {
 	}
 
 
-	public List<ComponentePO> getComponentesAdicionadosList() {
+	public List<? super ProdutoComponenteAbstract> getComponentesAdicionadosList() {
 		return componentesAdicionadosList;
 	}
 
 
-	public void setComponentesAdicionadosList(List<ComponentePO> componentesAdicionadosList) {
+	public void setComponentesAdicionadosList(List<? super ProdutoComponenteAbstract> componentesAdicionadosList) {
 		this.componentesAdicionadosList = componentesAdicionadosList;
 	}
 
@@ -427,6 +510,26 @@ public class ProdutoMB extends AbstractMB implements Serializable {
 
 	public void setProdutoPOsList(List<ProdutoPO> produtoPOsList) {
 		this.produtoPOsList = produtoPOsList;
+	}
+
+
+	public boolean isInterno() {
+		return interno;
+	}
+
+
+	public void setInterno(boolean interno) {
+		this.interno = interno;
+	}
+
+
+	public List<? super ProdutoComponenteAbstract> getTeste() {
+		return produtosComponentesList;
+	}
+
+
+	public void setTeste(List<? super ProdutoComponenteAbstract> teste) {
+		this.produtosComponentesList = teste;
 	}
 	
 	

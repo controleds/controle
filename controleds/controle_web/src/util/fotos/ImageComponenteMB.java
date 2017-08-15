@@ -37,6 +37,7 @@ public class ImageComponenteMB {
         }
         else {
             String id = context.getExternalContext().getRequestParameterMap().get("id");
+            if (id == null || id.equals("")) return new DefaultStreamedContent();
             ComponentePO componentePO = service.findComponente(new Long(id));
             if (componentePO != null && componentePO.getFoto() != null){
             	byte[] foto = service.findComponente(new Long(id)).getFoto();

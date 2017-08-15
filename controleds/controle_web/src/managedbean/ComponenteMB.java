@@ -40,6 +40,7 @@ public class ComponenteMB extends AbstractMB implements Serializable {
 	
 	private ComponentePO componentePO =  new  ComponentePO();
 	private List<ComponentePO> componentePOsList = new ArrayList<ComponentePO>();
+	private List<ComponentePO> componentePOsListFilter = new ArrayList<ComponentePO>();
 	private List<ClienteFornecedorPO> fornecedorPOsList  = new ArrayList<ClienteFornecedorPO>();
 	private List<SelectItem> fornecedoresSelectItems = new ArrayList<>();
 	private String fornecedorselectItem = "";
@@ -61,7 +62,7 @@ public class ComponenteMB extends AbstractMB implements Serializable {
 		fornecedorselectItem = "";
 		viewEnderecoPO = new EnderecoPO();
 		viewClienteFornecedorPO =  new  ClienteFornecedorPO();
-
+		componentePOsListFilter = produtoBO.findComponentes();
 	}
 	
 	
@@ -142,14 +143,25 @@ public class ComponenteMB extends AbstractMB implements Serializable {
 		this.enderecoPO = new EnderecoPO();
 	}
 	
-	public void selectComponente(ComponentePO componentePO){
-		this.componentePO = componentePO;
+	public void selectComponente(){
 		if (componentePO.getFornecedor() != null && componentePO.getFornecedor().getClienteFornecedorId() != null){
 			this.setFornecedorselectItem(componentePO.getFornecedor().getClienteFornecedorId().toString());
 		}
 	}
 
 	
+	
+	
+	public List<ComponentePO> getComponentePOsListFilter() {
+		return componentePOsListFilter;
+	}
+
+
+	public void setComponentePOsListFilter(List<ComponentePO> componentePOsListFilter) {
+		this.componentePOsListFilter = componentePOsListFilter;
+	}
+
+
 	public ProdutoBO getProdutoBO() {
 		return produtoBO;
 	}

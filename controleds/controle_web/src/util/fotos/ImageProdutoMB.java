@@ -37,6 +37,8 @@ public class ImageProdutoMB {
         }
         else {
             String id = context.getExternalContext().getRequestParameterMap().get("id");
+            if (id == null || id.equals("")) return new DefaultStreamedContent();
+            
             ProdutoPO produtoPO = service.find(new Long(id));
             if (produtoPO != null && produtoPO.getFoto() != null){
             	byte[] foto = service.find(new Long(id)).getFoto();
